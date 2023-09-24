@@ -1,7 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
-const blogRoutes = require("./routes/blogRoutes");
+const nfcDataRoutes = require("./routes/nfc_dataRoutes");
 
 // express app
 const app = express();
@@ -22,14 +22,14 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
-app.use((req, res, next) => {
+app.use(function (req, res, next) {
   res.locals.path = req.path;
+  res.locals.res = res;
   next();
 });
-
 // routes
 app.get("/", (req, res) => {
-  res.redirect("/tasks");
+  res.redirect("/logs");
 });
 
 app.get("/about", (req, res) => {
@@ -37,28 +37,9 @@ app.get("/about", (req, res) => {
 });
 
 // blog routes
-app.use("/tasks", blogRoutes);
+app.use("/logs", nfcDataRoutes);
 
 // 404 page
 app.use((req, res) => {
   res.status(404).render("404", { title: "404" });
 });
-
-///////////////////////////////////////////////////////////
-
-// app.get("/", (req, res) => {
-//   res.sendFile("./views/index.html", { root: __dirname });
-// });
-
-// app.get("/about", (req, res) => {
-//   res.sendFile("./views/about.html", { root: __dirname });
-// });
-
-// app.get("/about-us", (req, res) => {
-//   res.redirect("/about");
-// });
-
-// app.use((req, res) => {
-//   res.sendFile("./views/404.html", { root: __dirname });
-//   res.status(404);
-// });

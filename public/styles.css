@@ -82,25 +82,25 @@
     }
 
     /* create styles */
-    .create-blog form{
+    .create-nfc form{
       max-width: 400px;
       margin: 0 auto;
     }
-    .create-blog input,
-    .create-blog textarea{
+    .create-nfc input,
+    .create-nfc textarea{
       display: block;
       width: 100%;
       margin: 10px 0;
       padding: 8px;
     }
-    .create-blog label{
+    .create-nfc label{
       display: block;
       margin-top: 24px;
     }
     textarea{
       height: 120px;
     }
-    .create-blog button{
+    .create-nfc button{
       margin-top: 20px;
       background: crimson;
       color: white;
@@ -108,4 +108,10 @@
       border: 0;
       font-size: 1.2em;
       cursor: pointer;
+    }
+    nav ul li a.active {
+      color: #fff;
+      background-color: #007bff;
+      border-radius: 4px;
+      padding: 8px 16px;
     }

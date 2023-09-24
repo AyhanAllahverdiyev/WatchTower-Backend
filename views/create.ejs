@@ -4,14 +4,20 @@
     <body>
         <%- include("./partials/nav.ejs") %>
 
-            <div class="create-blog content">
-                <form action="/tasks" method="post">
-                    <label for="title">Task title:</label>
-                    <input type="text" id="title" name="title" required>
-                    <label for="snippet">Task snippet:</label>
-                    <input type="text" id="snippet" name="snippet" required>
-                    <label for="body">Task body:</label>
-                    <textarea id="body" required name="body" required></textarea>
+            <div class="create-nfc content">
+                <form action="/logs" method="post">
+                    <label for="SerialNumber">Serial Number:</label>
+                    <input type="number" id="SerialNumber" name="SerialNumber" required>
+
+                    <label for="idNumber">ID Number:</label>
+                    <input type="text" id="idNumber" name="idNumber" required>
+
+                    <label for="text">Text:</label>
+                    <input type="text" id="text" name="text" required>
+
+                    <label for="uniqueNumber">Unique Number:</label>
+                    <input type="number" id="uniqueNumber" name="uniqueNumber" required>
+
                     <button>Submit</button>
                 </form>
             </div>

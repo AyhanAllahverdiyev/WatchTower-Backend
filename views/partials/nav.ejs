@@ -1,14 +1,16 @@
 <nav>
-    <div class=" site-title">
-
-        <a href="/">
-            <h1>Tasks</h1>
+    <div class="site-title">
+        <a href="/logs">
+            <h1>Logs</h1>
         </a>
-        <h4>A website for creating tasks using Node, Express and MongoDB </h4>
+        <h4>Website for monitornig NFC Logs</h4>
     </div>
     <ul>
-        <li><a href="/">Tasks</a></li>
-        <li><a href="/about">About</a></li>
-        <li><a href="/Tasks/create">New Task</a></li>
+        <li><a href="/logs" <% if (res.locals.path==='/logs' || !res.locals.path) { %>class="active"<% } %>>Home</a>
+        </li>
+        <li><a href="/logs/create" <% if (res.locals.path==='/logs/create' ) { %>class="active"<% } %>>Create Sample
+                    Data</a>
+        <li><a href="/about" <% if (res.locals.path==='/about' ) { %>class="active"<% } %>>About</a></li>
+        </li>
     </ul>
 </nav>

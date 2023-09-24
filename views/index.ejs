@@ -1,35 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <%- include('./partials/head.ejs') %>
 
     <body>
-
-
         <%- include("./partials/nav.ejs") %>
             <div class="tasks content">
-                <h2>All Tasks</h2>
-                <% if (tasks.length> 0) { %>
-                    <% tasks.forEach(blog=>{ %>
-                        <a class="single" href="/tasks/<%= blog._id %>">
-                            <h3 class="title">
-                                <%= blog.title %>
+                <h2>All NFC Data</h2>
+                <% if (logs.length> 0) { %>
+                    <% logs.forEach(nfc=> { %>
+                        <a class="single" href="/logs/<%= nfc._id %>">
+                            <h3 class="title">NFC Data <%= nfc.SerialNumber %>
                             </h3>
                             <p class="snippet">
-                                <%= blog.snippet %>
+                                <%= nfc.text %>
                             </p>
                         </a>
-
                         <% }) %>
-                            <% }else{ %>
-
-
-                                <p>No tasks yet</p>
+                            <% } else { %>
+                                <p>No NFC Data yet</p>
                                 <% } %>
-
-
-
             </div>
+
             <%- include("./partials/footer.ejs") %>
     </body>
 

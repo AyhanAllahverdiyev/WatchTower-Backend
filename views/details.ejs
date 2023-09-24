@@ -5,24 +5,30 @@
     <body>
         <%- include ("./partials/nav.ejs") %>
             <div class="details content">
-                <h2>
-                    <%= blog.title %>
-                </h2>
-                <div class="content">
-                    <p>
-                        <%= blog.body %>
-                    </p>
-                </div>
-                <a class="delete" data-doc="<%= blog._id %>">
+                <h2>NFC Data Details</h2>
+                <p><strong>Serial Number:</strong>
+                    <%= nfc_data.SerialNumber %>
+                </p>
+                <p><strong>ID Number:</strong>
+                    <%= nfc_data.idNumber %>
+                </p>
+                <p><strong>Text:</strong>
+                    <%= nfc_data.text %>
+                </p>
+                <p><strong>Unique Number:</strong>
+                    <%= nfc_data.uniqueNumber %>
+                </p>
+                <a class="delete" data-doc="<%= nfc_data._id %>">
                     <img src="/trashcan.svg" alt="delete icon">
                 </a>
             </div>
+
             <%- include ("./partials/footer.ejs") %>
 
                 <script>
                     const trashcan = document.querySelector('a.delete');
                     trashcan.addEventListener('click', (e) => {
-                        const endpoint = `/tasks/${trashcan.dataset.doc}`;
+                        const endpoint = `/logs/${trashcan.dataset.doc}`;
                         fetch(endpoint, {
                             method: 'DELETE'
                         }).then((response) => {
