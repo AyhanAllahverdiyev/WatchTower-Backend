@@ -1,18 +1,22 @@
 const express = require("express");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
+const cors = require("cors");
 const nfcDataRoutes = require("./routes/nfc_dataRoutes");
-
+const bodyParser = require("body-parser");
+const port = 3000;
+//const ipAddress = "192.168.5.139";
 // express app
 const app = express();
-
+app.use(cors());
+app.use(bodyParser.json());
 // connect to mongodb & listen for requests
 const dbURI =
   "mongodb+srv://aykhan:68720103@nodetuts.pjavkkd.mongodb.net/?retryWrites=true&w=majority";
 
 mongoose
   .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then((result) => app.listen(3000))
+  .then((result) => app.listen(port))
   .catch((err) => console.log(err));
 
 // register view engine

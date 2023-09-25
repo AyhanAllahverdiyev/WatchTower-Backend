@@ -3,25 +3,31 @@ const Schema = mongoose.Schema;
 
 const nfcDataSchema = new Schema(
   {
-    SerialNumber: {
-      type: Number, 
-      required: true,
-    },
-    idNumber: {
+    ID: {
       type: String,
       required: true,
     },
-    text: {
+    next_Id: {
       type: String,
       required: true,
     },
-    uniqueNumber: {
-      type: Number,
+    name: {
+      type: String,
       required: true,
+    },
+    loc: {
+      lat: {
+        type: String,
+        required: true,
+      },
+      long: {
+        type: String,
+        required: true,
+      },
     },
   },
   {
-    timestamps: true,
+    timestamps: { createdAt: true, updatedAt: false },
     collection: "nfc_data",
   }
 );

@@ -6,17 +6,22 @@
 
             <div class="create-nfc content">
                 <form action="/logs" method="post">
-                    <label for="SerialNumber">Serial Number:</label>
-                    <input type="number" id="SerialNumber" name="SerialNumber" required>
+                    <label for="ID">ID:</label>
+                    <input type="text" id="ID" name="ID" required>
 
-                    <label for="idNumber">ID Number:</label>
-                    <input type="text" id="idNumber" name="idNumber" required>
+                    <label for="next_Id">Next ID:</label>
+                    <input type="text" id="next_Id" name="next_Id" required>
 
-                    <label for="text">Text:</label>
-                    <input type="text" id="text" name="text" required>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
 
-                    <label for="uniqueNumber">Unique Number:</label>
-                    <input type="number" id="uniqueNumber" name="uniqueNumber" required>
+                    <label for="latitude">Latitude:</label>
+                    <input type="number" id="latitude" name="loc[lat]" step="0.000001" required>
+
+                    <label for="longitude">Longitude:</label>
+                    <input type="number" id="longitude" name="loc[long]" step="0.000001" required>
+
+
 
                     <button>Submit</button>
                 </form>

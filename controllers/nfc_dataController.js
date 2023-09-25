@@ -28,6 +28,8 @@ const nfc_data_create_get = (req, res) => {
 };
 
 const nfc_data_create_post = (req, res) => {
+  console.log("nfc_data_create_post");
+  console.log(req.body);
   const nfc_data = new NFCData(req.body);
   nfc_data
     .save()
@@ -41,6 +43,7 @@ const nfc_data_create_post = (req, res) => {
 
 const nfc_data_delete = (req, res) => {
   const id = req.params.id;
+
   NFCData.findByIdAndDelete(id)
     .then((result) => {
       res.json({ redirect: "/logs" });

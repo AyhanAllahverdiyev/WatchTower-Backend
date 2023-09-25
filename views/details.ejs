@@ -7,17 +7,20 @@
             <div class="details content">
                 <h2>NFC Data Details</h2>
                 <p><strong>Serial Number:</strong>
-                    <%= nfc_data.SerialNumber %>
+                    <%= nfc_data.ID %>
                 </p>
                 <p><strong>ID Number:</strong>
-                    <%= nfc_data.idNumber %>
+                    <%= nfc_data.next_Id %>
                 </p>
-                <p><strong>Text:</strong>
-                    <%= nfc_data.text %>
+                <p><strong>Name:</strong>
+                    <%= nfc_data.name %>
                 </p>
-                <p><strong>Unique Number:</strong>
-                    <%= nfc_data.uniqueNumber %>
+                <p><strong>Location:</strong></p>
+                <p>Latitude: <%= nfc_data.loc.lat %>
                 </p>
+                <p>Longitude: <%= nfc_data.loc.long %>
+                </p>
+
                 <a class="delete" data-doc="<%= nfc_data._id %>">
                     <img src="/trashcan.svg" alt="delete icon">
                 </a>

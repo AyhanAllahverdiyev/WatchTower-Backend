@@ -9,10 +9,10 @@
                 <% if (logs.length> 0) { %>
                     <% logs.forEach(nfc=> { %>
                         <a class="single" href="/logs/<%= nfc._id %>">
-                            <h3 class="title">NFC Data <%= nfc.SerialNumber %>
+                            <h3 class="title">NFC Data <%= nfc.ID %>
                             </h3>
                             <p class="snippet">
-                                <%= nfc.text %>
+                                <%= nfc.name %>
                             </p>
                         </a>
                         <% }) %>
