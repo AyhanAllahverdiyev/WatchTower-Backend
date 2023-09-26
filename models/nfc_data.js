@@ -25,6 +25,10 @@ const nfcDataSchema = new Schema(
         required: true,
       },
     },
+    battery_level: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: { createdAt: true, updatedAt: false },

@@ -4,15 +4,18 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const nfcDataRoutes = require("./routes/nfc_dataRoutes");
 const bodyParser = require("body-parser");
-const port = 3000;
-//const ipAddress = "192.168.5.139";
-// express app
+const dotenv = require("dotenv"); // Use require instead of import
+
+
+
+dotenv.config(); // Load environment variables from .env
+
+const port = process.env.PORT || 3000; 
+const dbURI = process.env.MONGODB_URI; 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 // connect to mongodb & listen for requests
-const dbURI =
-  "mongodb+srv://aykhan:68720103@nodetuts.pjavkkd.mongodb.net/?retryWrites=true&w=majority";
 
 mongoose
   .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
