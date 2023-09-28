@@ -1,6 +1,5 @@
-// File: controllers/nfc_dataController.js
+require("dotenv").config();
 const NFCData = require("../models/nfc_data");
-
 const nfc_data_index = (req, res) => {
   NFCData.find()
     .sort({ createdAt: -1 })
@@ -26,22 +25,33 @@ const nfc_data_details = (req, res) => {
 const nfc_data_create_get = (req, res) => {
   res.render("create", { title: "Create a new NFC Data" });
 };
+var lastRead;
+
+const allowedOrder = process.env.ALLOWED_ORDER.split(",");
+let currentIndex = 0;
 
 const nfc_data_create_post = (req, res) => {
   console.log("nfc_data_create_post");
-  console.log(req.body);
-  const nfc_data = new NFCData(req.body);
-  nfc_data
-    .save()
-    .then((result) => {
-      res.redirect("/logs");
-      console.log(
-        "_______________Successfully saved to Database_______________"
-      );
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+
+  const requestedId = req.body.ID;
+
+  if (requestedId === allowedOrder[currentIndex]) {
+    currentIndex = (currentIndex + 1) % allowedOrder.length;
+    const nfc_data = new NFCData(req.body);
+    nfc_data
+      .save()
+      .then((result) => {
+        res.redirect("/logs");
+        console.log("Successfully saved to Database");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else {
+    console.log(
+      `Expected ID: ${allowedOrder[currentIndex]}, Received ID: ${requestedId}`
+    );
+  }
 };
 
 const nfc_data_delete = (req, res) => {
