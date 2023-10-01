@@ -1,4 +1,5 @@
-require("dotenv").config();
+const fs = require("fs");
+const { response } = require("express");
 const NFCData = require("../models/nfc_data");
 const nfc_data_index = (req, res) => {
   NFCData.find()
@@ -25,9 +26,12 @@ const nfc_data_details = (req, res) => {
 const nfc_data_create_get = (req, res) => {
   res.render("create", { title: "Create a new NFC Data" });
 };
-var lastRead;
 
-const allowedOrder = process.env.ALLOWED_ORDER.split(",");
+const data = JSON.parse(fs.readFileSync("./order.json"));
+
+// Extract the allowedOrderArray from the data
+const allowedOrderArray = data.allowedOrderArray || [];
+console.log(allowedOrderArray);
 let currentIndex = 0;
 
 const nfc_data_create_post = (req, res) => {
@@ -35,13 +39,14 @@ const nfc_data_create_post = (req, res) => {
 
   const requestedId = req.body.ID;
 
-  if (requestedId === allowedOrder[currentIndex]) {
-    currentIndex = (currentIndex + 1) % allowedOrder.length;
+  if (requestedId === allowedOrderArray[currentIndex]) {
+    currentIndex = (currentIndex + 1) % allowedOrderArray.length;
     const nfc_data = new NFCData(req.body);
     nfc_data
       .save()
       .then((result) => {
         res.redirect("/logs");
+        res.status(200);
         console.log("Successfully saved to Database");
       })
       .catch((err) => {
@@ -49,14 +54,19 @@ const nfc_data_create_post = (req, res) => {
       });
   } else {
     console.log(
-      `Expected ID: ${allowedOrder[currentIndex]}, Received ID: ${requestedId}`
+      `Expected ID: ${allowedOrderArray[currentIndex]}, Received ID: ${requestedId}`
     );
+    res
+      .status(400)
+      .send(
+        `Please read ${allowedOrderArray[currentIndex]}  instead of  ${requestedId}`
+      );
   }
 };
 
 const nfc_data_delete = (req, res) => {
   const id = req.params.id;
-
+  //delete everything in the database
   NFCData.findByIdAndDelete(id)
     .then((result) => {
       res.json({ redirect: "/logs" });

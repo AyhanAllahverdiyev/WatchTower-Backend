@@ -7,10 +7,6 @@ const nfcDataSchema = new Schema(
       type: String,
       required: true,
     },
-    next_Id: {
-      type: String,
-      required: true,
-    },
     name: {
       type: String,
       required: true,
