@@ -1,4 +1,3 @@
-// File: routes/nfc_dataRoutes.js
 const express = require("express");
 const nfcDataController = require("../controllers/nfc_dataController");
 
