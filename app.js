@@ -7,9 +7,8 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const fs = require("fs");
 const path = require("path");
-const auth = require("./routes/auth_Routes");
+
 const authRoutes = require("./routes/auth_Routes");
-//mongodb+srv://<username>:<password>@nodetuts.pjavkkd.mongodb.net/?retryWrites=true&w=majority
 const dataFilePath = path.join(__dirname, "data.json");
 dotenv.config();
 
@@ -19,7 +18,7 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.json);
+// app.use(express.json);
 
 mongoose
   .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
