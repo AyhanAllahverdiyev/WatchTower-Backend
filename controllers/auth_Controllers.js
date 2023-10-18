@@ -38,9 +38,13 @@ const handleErrors = (err) => {
 // create json web token
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (id) => {
-  return jwt.sign({ id }, "w34443de1kj23gy21f312g3fr12t3f1t2d31t2312t32tkj45345g3h45v3k4hv5kg4qleer4luq35d3123", {
-    expiresIn: maxAge,
-  });
+  return jwt.sign(
+    { id },
+    "w34443de1kj23gy21f312g3fr12t3f1t2d31t2312t32tkj45345g3h45v3k4hv5kg4qleer4luq35d3123",
+    {
+      expiresIn: maxAge,
+    }
+  );
 };
 
 // controller actions
@@ -78,4 +82,9 @@ module.exports.login_post = async (req, res) => {
     const errors = handleErrors(err);
     res.status(400).json({ errors });
   }
+};
+
+module.exports.logout_get = (req, res) => {
+  res.cookie("jwt", "", { maxAge: 1 });
+  res.redirect("/login");
 };
