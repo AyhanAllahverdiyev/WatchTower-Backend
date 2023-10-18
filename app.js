@@ -4,13 +4,14 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
+const cookieParser = require("cookie-parser");
 const fs = require("fs");
 const path = require("path");
 dotenv.config();
 
 const authRoutes = require("./routes/auth_Routes");
 const nfcDataRoutes = require("./routes/nfc_dataRoutes");
-const orderRoutes=require('./routes/order_Array')
+const orderRoutes = require("./routes/order_Array");
 
 const dataFilePath = path.join(__dirname, "data.json");
 
@@ -19,6 +20,10 @@ const dbURI = process.env.MONGODB_URI;
 const app = express();
 
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+// Parse application/json
 app.use(bodyParser.json());
 
 mongoose
@@ -41,7 +46,7 @@ app.get("/", (req, res) => {
   res.redirect("/logs");
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
- 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 app.get("/about", (req, res) => {
   res.render("about", { title: "About" });
@@ -50,9 +55,12 @@ app.get("/about", (req, res) => {
 
 app.use("/logs", nfcDataRoutes);
 app.use("/auth", authRoutes);
-app.use('/order',orderRoutes)
+app.use("/order", orderRoutes);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+ 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 app.use((req, res) => {
   res.status(404).render("404", { title: "404" });
 });

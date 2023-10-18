@@ -22,6 +22,15 @@
   "dependencies": {
   
     
+  "bcrypt": "^5.1.1",
+  
+    
+  "body-parser": "^1.20.2",
+  
+    
+  "cookie-parser": "^1.4.6",
+  
+    
   "cors": "^2.8.5",
   
     
@@ -46,7 +55,10 @@
   "mongoose-timestamp": "^0.6.0",
   
     
-  "morgan": "^1.10.0"
+  "morgan": "^1.10.0",
+  
+    
+  "validator": "^13.11.0"
   
   }
 }
