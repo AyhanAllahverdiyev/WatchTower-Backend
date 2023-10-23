@@ -36,7 +36,7 @@ const handleErrors = (err) => {
 };
 
 // create json web token
-const maxAge =  60*60*60;
+const maxAge =  24*60*60;
 const createToken = (id) => {
   return jwt.sign(
     { id },
