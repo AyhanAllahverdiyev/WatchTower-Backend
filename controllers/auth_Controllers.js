@@ -36,7 +36,7 @@ const handleErrors = (err) => {
 };
 
 // create json web token
-const maxAge = 3 * 24 * 60 * 60;
+const maxAge =  60*60*60;
 const createToken = (id) => {
   return jwt.sign(
     { id },
@@ -88,3 +88,46 @@ module.exports.logout_get = (req, res) => {
   res.cookie("jwt", "", { maxAge: 1 });
   res.redirect("/login");
 };
+
+// Modify the /refresh-token route
+module.exports.jwt_get=('refresh-token', async (req, res) => {
+  // Modify the /refresh-token route
+    const jwtCookie = req.cookies.jwt; // Retrieve the JWT token from cookies
+  
+    if (!jwtCookie) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+  
+    try {
+      // Verify the JWT token using the secret key to get the user's ID
+      const decodedToken = jwt.verify(jwtCookie, 'w34443de1kj23gy21f312g3fr12t3f1t2d31t2312t32tkj45345g3h45v3k4hv5kg4qleer4luq35d3123');
+  
+      // Extract user ID from the token
+      const userId = decodedToken.id;
+    console.log(userId);
+  
+      // Fetch user details from the user ID, for example using your User model
+      const user = await User.findById(userId);
+  
+      // You now have user details. You can use this information to re-log the user if necessary.
+  
+      // Create a new JWT using the user's ID
+      const newAccessToken = jwt.sign({ id: userId }, 'w34443de1kj23gy21f312g3fr12t3f1t2d31t2312t32tkj45345g3h45v3k4hv5kg4qleer4luq35d3123', { expiresIn: maxAge });
+  
+      // Set the new JWT cookie
+      sendAccessTokenCookie(res, newAccessToken);
+  
+      res.json({ success: true });
+    } catch (err) {
+      // Handle JWT verification errors here
+      res.status(400).json({ error: 'JWT verification failed' });
+    }
+  });
+  
+  sendAccessTokenCookie = (res, newAccessToken) => {
+    res.cookie('jwt', newAccessToken, {
+      httpOnly: true,
+      maxAge: maxAge * 1000, // Convert seconds to milliseconds
+    });
+  };
+  
