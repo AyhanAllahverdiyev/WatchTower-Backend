@@ -45,8 +45,10 @@ const nfc_data_create_post = (req, res) => {
     nfc_data
       .save()
       .then((result) => {
-        res.redirect("/logs");
+      
+        res.write("SavedToDB:TRUE");
         res.status(200);
+        res.redirect("/logs");
         console.log("Successfully saved to Database");
       })
       .catch((err) => {

@@ -1,6 +1,9 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-
+const dotenv = require("dotenv");
+dotenv.config();
+const SecretString= process.env.secret.toString();
+ 
 // handle errors
 const handleErrors = (err) => {
   console.log(err.message, err.code);
@@ -40,7 +43,7 @@ const maxAge =  24*60*60;
 const createToken = (id) => {
   return jwt.sign(
     { id },
-    "w34443de1kj23gy21f312g3fr12t3f1t2d31t2312t32tkj45345g3h45v3k4hv5kg4qleer4luq35d3123",
+    SecretString,
     {
       expiresIn: maxAge,
     }
@@ -99,30 +102,44 @@ module.exports.jwt_get=('refresh-token', async (req, res) => {
     }
   
     try {
-      // Verify the JWT token using the secret key to get the user's ID
-      const decodedToken = jwt.verify(jwtCookie, 'w34443de1kj23gy21f312g3fr12t3f1t2d31t2312t32tkj45345g3h45v3k4hv5kg4qleer4luq35d3123');
+      const decodedToken = jwt.verify(jwtCookie, SecretString);
   
-      // Extract user ID from the token
       const userId = decodedToken.id;
     console.log(userId);
   
-      // Fetch user details from the user ID, for example using your User model
       const user = await User.findById(userId);
   
-      // You now have user details. You can use this information to re-log the user if necessary.
   
-      // Create a new JWT using the user's ID
-      const newAccessToken = jwt.sign({ id: userId }, 'w34443de1kj23gy21f312g3fr12t3f1t2d31t2312t32tkj45345g3h45v3k4hv5kg4qleer4luq35d3123', { expiresIn: maxAge });
+      const newAccessToken = jwt.sign({ id: userId }, SecretString, { expiresIn: maxAge });
   
-      // Set the new JWT cookie
       sendAccessTokenCookie(res, newAccessToken);
   
       res.json({ success: true });
     } catch (err) {
-      // Handle JWT verification errors here
       res.status(400).json({ error: 'JWT verification failed' });
     }
   });
+   
+  module.exports.jwt_verify = (req, res) => {
+    const jwtToken = req.body.jwt;
+
+    if (!jwtToken) {
+      return res.status(400).json({ verify: false, message: 'JWT token missing in request' });
+    }
+  
+    try {
+      const decodedToken = jwt.verify(jwtToken, SecretString);
+      const currentTimestamp = Math.floor(Date.now() / 1000);
+  
+      if (decodedToken.exp && currentTimestamp > decodedToken.exp) {
+        return res.status(401).json({ verify: false, message: 'JWT token has expired' });
+      }
+  
+      return res.status(200).json({ verify: true });
+    } catch (err) {
+      return res.status(400).json({ verify: false, message: 'JWT token verification failed', error: err.message });
+    }
+  };
   
   sendAccessTokenCookie = (res, newAccessToken) => {
     res.cookie('jwt', newAccessToken, {
