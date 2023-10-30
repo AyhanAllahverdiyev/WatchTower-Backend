@@ -15,11 +15,15 @@ const userSchema = new mongoose.Schema({
     required: [true, "Please enter a password"],
     minlength: [6, "Minimum password length is 6 characters"],
   },
-  // username: {
-  //   type: String,
-  //   required: [true, "Please enter a username"],
-  //   minlength: [6, "Minimum username length is 6 characters"],
-  // },
+  auth_level: {
+    type: String,
+    required: true,
+    
+  },
+},
+{
+  timestamps: { createdAt: true, updatedAt: false },
+  collection: "User",
 });
 
 // fire a function before doc saved to db
@@ -28,12 +32,11 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
-
+ 
 // static method to login user
 userSchema.statics.login = async function (email, password) {
-  const user = await this.findOne({ email });
-  // const username=await this.findOne({ username });
-  if (user) {
+   const user = await this.findOne({ email });
+   if (user) {
     const auth = await bcrypt.compare(password, user.password);
     if (auth) {
       return user;

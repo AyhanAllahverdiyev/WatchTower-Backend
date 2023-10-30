@@ -4,6 +4,41 @@ const dotenv = require("dotenv");
 dotenv.config();
 const SecretString= process.env.secret.toString();
  
+
+module.exports.get_All_Users = (req, res) => {
+  User.find()
+    .sort({ createdAt: -1 })
+    .then((result) => {
+       console.log(result);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+module.exports.change_auth_level = (req, res) => {
+  const { email, auth_level } = req.body;
+
+  // Assuming you have a User model, use findOne instead of findById
+  User.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      user.auth_level = auth_level;
+      return user.updateOne(user);
+    })
+    .then((updatedUser) => {
+      console.log(updatedUser);
+      res.status(200).json(updatedUser); // Send a response if needed
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred' }); // Handle errors
+    });
+};
+ 
+
 // handle errors
 const handleErrors = (err) => {
   console.log(err.message, err.code);
@@ -24,7 +59,6 @@ const handleErrors = (err) => {
     errors.email = "that email is already registered";
     return errors;
   }
-
   // validation errors
   if (err.message.includes("user validation failed")) {
      Object.values(err.errors).forEach(({ properties }) => {
@@ -57,10 +91,10 @@ module.exports.login_get = (req, res) => {
 };
 
 module.exports.signup_post = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password ,auth_level} = req.body;
 
   try {
-    const user = await User.create({ email, password });
+    const user = await User.create({ email, password,auth_level });
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
     res.status(201).json({ user: user._id });
@@ -69,7 +103,7 @@ module.exports.signup_post = async (req, res) => {
     res.status(400).json({ errors });
   }
 };
-
+ 
 module.exports.login_post = async (req, res) => {
   const { email, password } = req.body;
 
@@ -77,7 +111,7 @@ module.exports.login_post = async (req, res) => {
     const user = await User.login(email, password);
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-    res.status(200).json({ user: user._id });
+    res.status(200).json({ user: user._id,auth_level:user.auth_level});
   } catch (err) {
     const errors = handleErrors(err);
     res.status(400).json({ errors });

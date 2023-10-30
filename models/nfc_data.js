@@ -28,7 +28,7 @@ const nfcDataSchema = new Schema(
   },
   {
     timestamps: { createdAt: true, updatedAt: false },
-    collection: "User_Data_Collection",
+    collection: "NFC_Data",
   }
 );
 
