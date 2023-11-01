@@ -35,32 +35,44 @@ mongoose
     const wss = new WebSocket.Server({ noServer: true });
 
     // WebSocket connection handler
-  // WebSocket connection handler
-wss.on('connection', (ws) => {
-  console.log('WebSocket connection established');
+    wss.on('connection', (ws) => {
+      console.log('WebSocket connection established');
 
-  // Handle WebSocket messages
-  ws.on('message', (message) => {
-    if (typeof message === 'string') {
-      // If the message is already a string, use it directly
-      console.log('Received message:', message);
-    } else if (message instanceof Buffer) {
-      // If the message is a buffer, convert it to a string and then use it
-      const messageString = message.toString('utf8');
-      console.log('Received message:', messageString);
-    } else {
-      console.log('Received message of an unexpected type:', message);
-    }
-
-    // Broadcast the message to all connected clients
-    wss.clients.forEach((client) => {
-      if (client !== ws && client.readyState === WebSocket.OPEN) {
-        client.send(message);
-      }
+      // Handle WebSocket messages
+      ws.on('message', (message) => {
+        if (typeof message === 'string') {
+          console.log('Received message:', message);
+        } else if (message instanceof Buffer) {
+          // Convert binary data to a string
+          const messageString = message.toString('utf8');
+          console.log('Received message:', messageString);
+        } else {
+          console.log('Received message of an unexpected type:', message);
+        }
+      
+        // Broadcast the message to all connected clients
+        wss.clients.forEach((client) => {
+          if (client !== ws && client.readyState === WebSocket.OPEN) {
+            client.send(message);
+          }
+        });
+      });
+      
     });
-  });
-});
 
+    // Create an endpoint for broadcasting a message
+    app.post('/broadcastFromServer', (req, res) => {
+      const message = req.body.message; // Get the message from the request body
+
+      // Broadcast the message to all connected clients
+      wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(message);
+        }
+      });
+
+      res.status(200).send('Message broadcasted to all clients');
+    });
 
     // Upgrade HTTP server to a WebSocket server
     const server = app.listen(port);

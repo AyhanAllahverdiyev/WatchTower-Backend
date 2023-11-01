@@ -1,11 +1,16 @@
 {
   "allowedOrderArray": [
-    "START",
-    "1 ",
-    "2",
-    "MID",
-    "3",
     "4",
-    "FINISH"
+    "2",
+    "START",
+    "FINISH",
+    "cvv",
+    "l",
+    "1 ",
+    "h",
+    "huuuuu",
+    "g",
+    "Instance of 'Future<String>'",
+    "3"
   ]
 }
