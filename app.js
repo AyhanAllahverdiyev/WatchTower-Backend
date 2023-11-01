@@ -29,7 +29,47 @@ app.use(bodyParser.json());
 
 mongoose
   .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then((result) => app.listen(port))
+  .then((result) => {
+    // Set up the WebSocket server
+    const WebSocket = require('ws');
+    const wss = new WebSocket.Server({ noServer: true });
+
+    // WebSocket connection handler
+  // WebSocket connection handler
+wss.on('connection', (ws) => {
+  console.log('WebSocket connection established');
+
+  // Handle WebSocket messages
+  ws.on('message', (message) => {
+    if (typeof message === 'string') {
+      // If the message is already a string, use it directly
+      console.log('Received message:', message);
+    } else if (message instanceof Buffer) {
+      // If the message is a buffer, convert it to a string and then use it
+      const messageString = message.toString('utf8');
+      console.log('Received message:', messageString);
+    } else {
+      console.log('Received message of an unexpected type:', message);
+    }
+
+    // Broadcast the message to all connected clients
+    wss.clients.forEach((client) => {
+      if (client !== ws && client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    });
+  });
+});
+
+
+    // Upgrade HTTP server to a WebSocket server
+    const server = app.listen(port);
+    server.on('upgrade', (request, socket, head) => {
+      wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit('connection', ws, request);
+      });
+    });
+  })
   .catch((err) => console.log(err));
 
 app.set("view engine", "ejs");
@@ -42,20 +82,15 @@ app.use(function (req, res, next) {
   res.locals.res = res;
   next();
 });
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-app.get("/about", //requireAuth, 
-(req, res) => {
+app.get("/about", (req, res) => {
   res.render("about", { title: "About" });
 });
-app.use("/logs",// requireAuth, 
-nfcDataRoutes);
+
+app.use("/logs", nfcDataRoutes);
 app.use("/", authRoutes);
 app.use("/order", orderRoutes);
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 app.use((req, res) => {
   res.status(404).render("404", { title: "404" });
 });
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -12,9 +12,9 @@ const nfc_data_index = (req, res) => {
     });
 };
 
-const nfc_data_details = (req, res) => {
+const nfc_data_details = (req, res) => { 
   const id = req.params.id;
-  NFCData.findById(id)
+  NFCData.findById(id) 
     .then((result) => {
       res.render("details", { nfc_data: result, title: "NFC Data Details" });
     })

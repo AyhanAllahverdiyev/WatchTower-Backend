@@ -18,7 +18,7 @@ module.exports.get_All_Users = (req, res) => {
 module.exports.change_auth_level = (req, res) => {
   const { email, auth_level } = req.body;
 
-  // Assuming you have a User model, use findOne instead of findById
+  //  use findOne instead of findById
   User.findOne({ email })
     .then((user) => {
       if (!user) {
@@ -125,8 +125,7 @@ module.exports.logout_get = (req, res) => {
 
 // Modify the /refresh-token route
 module.exports.jwt_get=('refresh-token', async (req, res) => {
-  // Modify the /refresh-token route
-    const jwtCookie = req.cookies.jwt; // Retrieve the JWT token from cookies
+     const jwtCookie = req.cookies.jwt; // Retrieve the JWT token from cookies
   
     if (!jwtCookie) {
       return res.status(401).json({ error: 'Unauthorized' });

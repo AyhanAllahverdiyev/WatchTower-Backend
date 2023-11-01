@@ -26,7 +26,7 @@ module.exports.order_array_post = (req, res) => {
 
     // Update the array in the JSON file
     const updatedData = {
-      allowedOrderArray: updatedArray,
+      allowedOrderArray: updatedArray, 
     };
     fs.writeFile(
       "./order.json",
