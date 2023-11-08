@@ -47,18 +47,20 @@ mongoose
       // Handle WebSocket messages
       ws.on('message', (message) => {
         if (typeof message === 'string') {
-          console.log('Received message:', message);
+          console.log('Received message from WebSocket:', message);
         } else if (message instanceof Buffer) {
           // Convert binary data to a string
           const messageString = message.toString('utf8');
-          console.log('Received message:', messageString);
+          message=messageString;
+         console.log('Received message from WebSocket:', messageString);
         } else {
-          console.log('Received message of an unexpected type:', message);
+          console.log('Received message of an unexpected type from WebSocket:', message);
         }
       
         // Broadcast the message to all connected clients
         wss.clients.forEach((client) => {
           if (client !== ws && client.readyState === WebSocket.OPEN) {
+           console.log('Broadcasting message to WebSocket:', message);
             client.send(message);
           }
         });
@@ -77,7 +79,7 @@ mongoose
         }
       });
 
-      res.status(200).send('Message broadcasted to all clients');
+      res.status(200).send('Message broadcasted to all clients from Firebase');
     });
 
     // Upgrade HTTP server to a WebSocket server
