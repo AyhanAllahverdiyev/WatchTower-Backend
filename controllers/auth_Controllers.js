@@ -8,18 +8,28 @@ const SecretString= process.env.secret.toString();
 module.exports.get_All_Users = (req, res) => {
   User.find()
     .sort({ createdAt: -1 })
-    .then((result) => {
-       console.log(result);
+    .then((users) => {
+      const usersDTO = users.map(user => DTO(user));
+      res.send(usersDTO);
+      console.log(usersDTO);
     })
     .catch((err) => {
       console.log(err);
     });
 };
+
+function DTO(user) {
+  return {
+    _id: user._id,
+    email: user.email,
+    auth_level: user.auth_level,
+  };
+}
 module.exports.change_auth_level = (req, res) => {
-  const { email, auth_level } = req.body;
+  const { _id, auth_level } = req.body;
 
   //  use findOne instead of findById
-  User.findOne({ email })
+  User.findOne({ _id })
     .then((user) => {
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
