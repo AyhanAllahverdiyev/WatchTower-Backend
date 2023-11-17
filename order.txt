@@ -2,11 +2,11 @@
   "allowedOrderArray": [
   {
     "name": 1,
-    "isRead": false
+    "isRead": true
   },
   {
     "name": 2,
-    "isRead": false
+    "isRead": true
   },
   {
     "name": 3,

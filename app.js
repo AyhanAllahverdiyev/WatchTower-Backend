@@ -15,6 +15,7 @@ const authRoutes = require("./routes/auth_Routes");
 const nfcDataRoutes = require("./routes/nfc_dataRoutes");
 const orderRoutes = require("./routes/order_Array");
 const User = require("./models/User");
+const {resetIsReadValues}=require("./controllers/nfc_dataController");
  var serviceAccount = require("/Applications/development/WatchTower-Backend/watchtower-cloud-firebase-adminsdk-3kp4f-2dc80318d8.json");
  
 admin.initializeApp({
@@ -82,7 +83,10 @@ mongoose
     });
 
     // Upgrade HTTP server to a WebSocket server
-    const server = app.listen(port);
+    const server = app.listen(port,()=>{
+      console.log(`Server is running on port ${port}`);
+      resetIsReadValues("./order.txt");
+    });
     server.on('upgrade', (request, socket, head) => {
       wss.handleUpgrade(request, socket, head, (ws) => {
         wss.emit('connection', ws, request);

@@ -94,13 +94,18 @@ function resetIsReadValues(fileName) {
   });
 }
 
-const data = JSON.parse(fs.readFileSync("./order.txt"));
+let allowedOrderArray = [];
 
-// Extract the allowedOrderArray from the data
-const allowedOrderArray = data.allowedOrderArray || [];
-console.log(allowedOrderArray);
+try {
+  const data = fs.readFileSync("./order.txt", "utf8");
+  const parsedData = JSON.parse(data);
+  allowedOrderArray = parsedData.allowedOrderArray || [];
+  console.log(allowedOrderArray);
+} catch (error) {
+  console.error("Error reading or parsing order.txt:", error);
+}
+
 let currentIndex = 0;
-
 const reset_order = (req, res) => {
   try{
   currentIndex = 0;
@@ -167,4 +172,6 @@ module.exports = {
   nfc_data_create_post,
   nfc_data_delete,
   reset_order,
-};
+  resetIsReadValues
+ };
+ 
