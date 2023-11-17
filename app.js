@@ -1,9 +1,9 @@
 const admin = require("firebase-admin");
- 
 const express = require("express");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const WebSocket = require('ws');
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
@@ -37,7 +37,6 @@ mongoose
   .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((result) => {
     // Set up the WebSocket server
-    const WebSocket = require('ws');
     const wss = new WebSocket.Server({ noServer: true });
 
     // WebSocket connection handler
@@ -101,8 +100,7 @@ app.use(function (req, res, next) {
   res.locals.path = req.path;
   res.locals.res = res;
   next();
-});
-
+}); 
 app.get("/about", (req, res) => {
   res.render("about", { title: "About" });
 });

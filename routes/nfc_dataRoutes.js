@@ -8,5 +8,5 @@ router.get("/", nfcDataController.nfc_data_index);
 router.post("/", nfcDataController.nfc_data_create_post);
 router.get("/:id", nfcDataController.nfc_data_details);
 router.delete("/:id", nfcDataController.nfc_data_delete);
-
+ 
 module.exports = router;

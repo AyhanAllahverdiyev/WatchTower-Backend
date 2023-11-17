@@ -34,6 +34,17 @@ const allowedOrderArray = data.allowedOrderArray || [];
 console.log(allowedOrderArray);
 let currentIndex = 0;
 
+const reset_order = (req, res) => {
+  try{
+  currentIndex = 0;
+   res.status(200).send(
+          "Read Order Reseted"
+        );
+   }catch(err){
+    console.log(err);
+    res.status(500).send('Unable to reset read order')
+  }
+ };
 const nfc_data_create_post = (req, res) => {
   console.log("nfc_data_create_post");
 
@@ -49,11 +60,8 @@ const nfc_data_create_post = (req, res) => {
         .status(200)
         .send(
           "SavedToDB:TRUE"
-        );
-        res.write("SavedToDB:TRUE");
-        res.status(200);
-        res.redirect("/logs");
-        console.log("Successfully saved to Database");
+        ); 
+         console.log("Successfully saved to Database");
       })
       .catch((err) => {
         console.log(err);
@@ -88,4 +96,5 @@ module.exports = {
   nfc_data_create_get,
   nfc_data_create_post,
   nfc_data_delete,
+  reset_order,
 };
