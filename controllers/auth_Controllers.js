@@ -85,8 +85,10 @@ const handleErrors = (err) => {
   return errors;
 };
 
-// create json web token
-const maxAge = 20;
+//////////////////////////////// DEFINING MAX AGE FOR COOKIE ////////////////////////////////////////////////////
+const maxAge = 200;
+//////////////////////////////// DEFINING MAX AGE FOR COOKIE ////////////////////////////////////////////////////
+
 const createToken = (id) => {
   return jwt.sign(
     { id },

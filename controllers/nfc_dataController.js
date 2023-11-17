@@ -1,6 +1,7 @@
 const fs = require("fs");
 const { response } = require("express");
 const NFCData = require("../models/nfc_data");
+const { json } = require("body-parser");
 const nfc_data_index = (req, res) => {
   NFCData.find()
     .sort({ createdAt: -1 })
@@ -25,9 +26,75 @@ const nfc_data_details = (req, res) => {
 
 const nfc_data_create_get = (req, res) => {
   res.render("create", { title: "Create a new NFC Data" });
-};
+}; 
+function updateIsReadValue(fileName, nameToUpdate, newValue) {
+  fs.readFile(fileName, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading file:', err);
+      return;
+    }
 
-const data = JSON.parse(fs.readFileSync("./order.json"));
+    let jsonContent;
+    try {
+      jsonContent = JSON.parse(data);
+     } catch (parseError) {
+      console.error('Error parsing JSON:', parseError);
+      return;
+    }
+
+    const itemToUpdate = jsonContent.allowedOrderArray.find(item => item.name.toString() === nameToUpdate);
+    if (itemToUpdate) {
+      itemToUpdate.isRead = newValue;
+      console.log(allowedOrderArray);
+    } else {
+      console.error(`Item with name ${nameToUpdate} not found`);
+      return;
+    }
+
+    const updatedData = `{\n  "allowedOrderArray": ${JSON.stringify(jsonContent.allowedOrderArray, null, 2)}\n}\n`;
+
+    fs.writeFile(fileName, updatedData, 'utf8', err => {
+      if (err) {
+        console.error('Error writing file:', err);
+      } else {
+        console.log('File updated successfully!');
+      }
+    });
+  });
+}
+
+function resetIsReadValues(fileName) {
+  fs.readFile(fileName, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading file:', err);
+      return;
+    }
+
+    let jsonContent;
+    try {
+      jsonContent = JSON.parse(data);
+    } catch (parseError) {
+      console.error('Error parsing JSON:', parseError);
+      return;
+    }
+
+    jsonContent.allowedOrderArray.forEach(item => {
+      item.isRead = false;
+    });
+
+    const updatedData = `{\n  "allowedOrderArray": ${JSON.stringify(jsonContent.allowedOrderArray, null, 2)}\n}\n`;
+
+    fs.writeFile(fileName, updatedData, 'utf8', err => {
+      if (err) {
+        console.error('Error writing file:', err);
+      } else {
+        console.log('All isRead values reset successfully!');
+      }
+    });
+  });
+}
+
+const data = JSON.parse(fs.readFileSync("./order.txt"));
 
 // Extract the allowedOrderArray from the data
 const allowedOrderArray = data.allowedOrderArray || [];
@@ -37,6 +104,7 @@ let currentIndex = 0;
 const reset_order = (req, res) => {
   try{
   currentIndex = 0;
+  resetIsReadValues("./order.txt");
    res.status(200).send(
           "Read Order Reseted"
         );
@@ -44,36 +112,38 @@ const reset_order = (req, res) => {
     console.log(err);
     res.status(500).send('Unable to reset read order')
   }
- };
-const nfc_data_create_post = (req, res) => {
+ };const nfc_data_create_post = (req, res) => {
   console.log("nfc_data_create_post");
 
   const requestedId = req.body.ID;
 
-  if (requestedId === allowedOrderArray[currentIndex]) {
+  if (requestedId === allowedOrderArray[currentIndex]?.name.toString()) {
+    allowedOrderArray[currentIndex].isRead = true;
     currentIndex = (currentIndex + 1) % allowedOrderArray.length;
+    
+    console.log(allowedOrderArray);
+
     const nfc_data = new NFCData(req.body);
     nfc_data
       .save()
       .then((result) => {
         res
-        .status(200)
-        .send(
-          "SavedToDB:TRUE"
-        ); 
-         console.log("Successfully saved to Database");
+          .status(200)
+          .send("SavedToDB:TRUE");
+        console.log("Successfully saved to Database");
+        updateIsReadValue("./order.txt", requestedId, true);
       })
       .catch((err) => {
         console.log(err);
       });
   } else {
     console.log(
-      `Expected ID: ${allowedOrderArray[currentIndex]}, Received ID: ${requestedId}`
+      `Expected ID: ${allowedOrderArray[currentIndex]?.name}, Received ID: ${requestedId}`
     );
     res
       .status(400)
       .send(
-        `Please read ${allowedOrderArray[currentIndex]}  instead of  ${requestedId}`
+        `Please read ${allowedOrderArray[currentIndex]?.name} instead of ${requestedId}`
       );
   }
 };

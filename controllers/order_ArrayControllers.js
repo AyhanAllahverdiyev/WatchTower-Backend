@@ -2,7 +2,7 @@ const fs = require("fs");
 module.exports.order_array_get = (req, res) => {
   try {
     // Read the JSON file and parse the data
-    const data = JSON.parse(fs.readFileSync("./order.json"));
+    const data = JSON.parse(fs.readFileSync("./order.txt"));
 
     // Extract the allowedOrderArray from the data
     const allowedOrderArray = data.allowedOrderArray || [];
@@ -29,7 +29,7 @@ module.exports.order_array_post = (req, res) => {
       allowedOrderArray: updatedArray, 
     };
     fs.writeFile(
-      "./order.json",
+      "./order.txt",
       JSON.stringify(updatedData, null, 2),
       (err) => {
         if (err) {
