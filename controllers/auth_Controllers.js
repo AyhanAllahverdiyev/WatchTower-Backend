@@ -1,9 +1,15 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const fs=require('fs');
+const path =require('path');
 dotenv.config();
 const SecretString= process.env.secret.toString();
- 
+const tokenBlacklistPath = path.join(__dirname, 'tokenblacklist.txt');
+// Check if the blacklist file exists; if not, create it
+if (!fs.existsSync(tokenBlacklistPath)) {
+  fs.writeFileSync(tokenBlacklistPath, '');
+}
 
 module.exports.get_All_Users = (req, res) => {
   User.find()
@@ -80,7 +86,7 @@ const handleErrors = (err) => {
 };
 
 // create json web token
-const maxAge =  24*60*60;
+const maxAge = 20;
 const createToken = (id) => {
   return jwt.sign(
     { id },
@@ -126,39 +132,30 @@ module.exports.login_post = async (req, res) => {
     const errors = handleErrors(err);
     res.status(400).json({ errors });
   }
+};module.exports.logout = (req, res) => {
+  const jwt = req.body.jwt;
+
+  if (isTokenBlacklisted(jwt)) {
+    res.clearCookie('jwt');
+    res.status(300).send('Token already blacklisted');
+  } else {
+    addToBlacklistFile(jwt);
+    res.clearCookie('jwt');
+    res.status(200).send('Logout successful');
+  }
 };
 
-module.exports.logout_get = (req, res) => {
-  res.cookie("jwt", "", { maxAge: 1 });
-  res.redirect("/login");
-};
+// Function to add a token to the blacklist file
+function addToBlacklistFile(token) {
+  fs.appendFileSync(tokenBlacklistPath, token + '\n');
+}
 
-// Modify the /refresh-token route
-module.exports.jwt_get=('refresh-token', async (req, res) => {
-     const jwtCookie = req.cookies.jwt; // Retrieve the JWT token from cookies
-  
-    if (!jwtCookie) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-  
-    try {
-      const decodedToken = jwt.verify(jwtCookie, SecretString);
-  
-      const userId = decodedToken.id;
-    console.log(userId);
-  
-      const user = await User.findById(userId);
-  
-  
-      const newAccessToken = jwt.sign({ id: userId }, SecretString, { expiresIn: maxAge });
-  
-      sendAccessTokenCookie(res, newAccessToken);
-  
-      res.json({ success: true });
-    } catch (err) {
-      res.status(400).json({ error: 'JWT verification failed' });
-    }
-  });
+// Function to check if a token is in the blacklist file
+function isTokenBlacklisted(token) {
+  const tokens = fs.readFileSync(tokenBlacklistPath, 'utf8').split('\n');
+  return tokens.includes(token.trim());
+}
+ 
    
   module.exports.jwt_verify = (req, res) => {
     const jwtToken = req.body.jwt;
@@ -172,7 +169,16 @@ module.exports.jwt_get=('refresh-token', async (req, res) => {
       const currentTimestamp = Math.floor(Date.now() / 1000);
   
       if (decodedToken.exp && currentTimestamp > decodedToken.exp) {
-        return res.status(401).json({ verify: false, message: 'JWT token has expired' });
+         if(isTokenBlacklisted(jwtToken)){
+        return res.status(401).json({ verify: false, message: 'JWT token is blacklisted' });
+         }
+         else{
+            addToBlacklistFile(jwtToken);
+          return res.status(402).json({ verify: false, message: 'JWT token is expired' });
+         }
+      }
+      else if (isTokenBlacklisted(jwtToken)){
+        return res.status(402).json({ verify: false, message: 'JWT token is blacklisted' });
       }
   
       return res.status(200).json({ verify: true });

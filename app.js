@@ -15,7 +15,7 @@ const authRoutes = require("./routes/auth_Routes");
 const nfcDataRoutes = require("./routes/nfc_dataRoutes");
 const orderRoutes = require("./routes/order_Array");
 const User = require("./models/User");
-var serviceAccount = require("/Applications/development/WatchTower-Backend/watchtower-cloud-firebase-adminsdk-3kp4f-2dc80318d8.json");
+ var serviceAccount = require("/Applications/development/WatchTower-Backend/watchtower-cloud-firebase-adminsdk-3kp4f-2dc80318d8.json");
  
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -108,7 +108,7 @@ app.get("/about", (req, res) => {
 app.use("/logs", nfcDataRoutes);
 app.use("/", authRoutes);
 app.use("/order", orderRoutes);
-
+ 
 app.post('/sendBroadcastMessage', (req, res) => {
   const { type, content, topic } = req.body;
 
