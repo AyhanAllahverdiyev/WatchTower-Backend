@@ -2,6 +2,7 @@ const fs = require("fs");
 const { response } = require("express");
 const NFCData = require("../models/nfc_data");
 const { json } = require("body-parser");
+const { reset } = require("nodemon");
 const nfc_data_index = (req, res) => {
   NFCData.find()
     .sort({ createdAt: -1 })
@@ -96,14 +97,11 @@ function resetIsReadValues(fileName) {
 
 let allowedOrderArray = [];
 
-try {
-  const data = fs.readFileSync("./order.txt", "utf8");
+   const data = fs.readFileSync("./order.txt", "utf8");
   const parsedData = JSON.parse(data);
   allowedOrderArray = parsedData.allowedOrderArray || [];
   console.log(allowedOrderArray);
-} catch (error) {
-  console.error("Error reading or parsing order.txt:", error);
-}
+ 
 
 let currentIndex = 0;
 const reset_order = (req, res) => {
@@ -117,39 +115,56 @@ const reset_order = (req, res) => {
     console.log(err);
     res.status(500).send('Unable to reset read order')
   }
- };const nfc_data_create_post = (req, res) => {
+ };
+ const nfc_data_create_post = (req, res) => {
   console.log("nfc_data_create_post");
 
   const requestedId = req.body.ID;
 
   if (requestedId === allowedOrderArray[currentIndex]?.name.toString()) {
     allowedOrderArray[currentIndex].isRead = true;
-    currentIndex = (currentIndex + 1) % allowedOrderArray.length;
-    
-    console.log(allowedOrderArray);
 
+    // Check if it's the last tag in the array
+    if (currentIndex === allowedOrderArray.length - 1) {
+      console.log('Last tag Read, Tour Completed');
+      currentIndex = 0; // Restart from the beginning
+      resetIsReadValues("./order.txt");
+   //   const data=fs.readSync("./order.txt");
+      const newParse = JSON.parse(data);
+      allowedOrderArray = newParse.allowedOrderArray || [];    }
+       else {
+      currentIndex = (currentIndex + 1) % allowedOrderArray.length;
+    }
+
+    console.log(allowedOrderArray);
+    console.log(`currentIndex: ${currentIndex}`);
+    
     const nfc_data = new NFCData(req.body);
     nfc_data
       .save()
       .then((result) => {
-        res
-          .status(200)
-          .send("SavedToDB:TRUE");
         console.log("Successfully saved to Database");
         updateIsReadValue("./order.txt", requestedId, true);
+
+        // Respond after processing
+        if (currentIndex === 0) {
+          res.status(302).send("SavedToDB:TRUE, Tour Completed");
+          resetIsReadValues("./order.txt");
+        } else {
+          res.status(200).send("SavedToDB:TRUE");
+        }
       })
       .catch((err) => {
         console.log(err);
+        res.status(500).send("Error saving to database");
       });
   } else {
     console.log(
       `Expected ID: ${allowedOrderArray[currentIndex]?.name}, Received ID: ${requestedId}`
     );
-    res
-      .status(400)
-      .send(
-        `Please read ${allowedOrderArray[currentIndex]?.name} instead of ${requestedId}`
-      );
+    res.status(400).send(
+      `Please read ${allowedOrderArray[currentIndex]?.name} instead of ${requestedId}`
+    );
   }
 };
 
