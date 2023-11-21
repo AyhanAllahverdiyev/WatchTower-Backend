@@ -3,6 +3,19 @@ const { response } = require("express");
 const NFCData = require("../models/nfc_data");
 const { json } = require("body-parser");
 const { reset } = require("nodemon");
+const User = require("../models/User");
+const { Console } = require("console");
+
+
+
+function resetAllowedOrderArray() {
+  const data = fs.readFileSync("./order.txt", "utf8");
+  const parsedData = JSON.parse(data);
+  allowedOrderArray = parsedData.allowedOrderArray || [];
+  console.log("Allowed Order Array Reset:", allowedOrderArray);
+}
+
+
 const nfc_data_index = (req, res) => {
   NFCData.find()
     .sort({ createdAt: -1 })
@@ -180,13 +193,37 @@ const nfc_data_delete = (req, res) => {
     });
 };
 
+
+const user_read_history=(req,res)=>{
+  try{
+  const id = req.body._id;
+    console.log(id);
+  NFCData.find({user_id:id})
+ .then((result)=>{
+  if(result.length==0 ){
+    console.log("User not found");
+    return res.status(404).json({message:'User not found'});
+  }
+  else{ 
+  console.log(result);
+  res.status(200).json(result);
+  }
+ })
+}catch(err){
+  res.statuscode(500).send('Unable to get user read history')
+}
+  
+}
+
 module.exports = {
+  user_read_history,
   nfc_data_index,
   nfc_data_details,
   nfc_data_create_get,
   nfc_data_create_post,
   nfc_data_delete,
   reset_order,
-  resetIsReadValues
+  resetIsReadValues,
+  resetAllowedOrderArray
  };
  

@@ -1,4 +1,5 @@
 const fs = require("fs");
+const {resetAllowedOrderArray}=require("./nfc_dataController");
 module.exports.order_array_get = (req, res) => {
   try {
     // Read the JSON file and parse the data
@@ -27,8 +28,7 @@ module.exports.order_array_post = (req, res) => {
     // Update the array in the JSON file
     const updatedData = {
       allowedOrderArray: updatedArray, 
-    };
-    fs.writeFile(
+    };fs.writeFile(
       "./order.txt",
       JSON.stringify(updatedData, null, 2),
       (err) => {
@@ -36,11 +36,16 @@ module.exports.order_array_post = (req, res) => {
           console.error("Error writing to file:", err);
           return res.status(500).json({ error: "Error writing to file" });
         }
-
+    
+        // After successfully writing to the file, call resetAllowedOrderArray
+        resetAllowedOrderArray(); // Assuming this function doesn't require any arguments
+    
+        console.log("All isRead values reset successfully!");
         console.log("Array updated successfully:", updatedArray);
         res.json({ success: true, updatedArray });
       }
     );
+    
   } catch (error) {
     console.error("Error updating array:", error);
     res.status(500).json({ error: "Error updating array" });

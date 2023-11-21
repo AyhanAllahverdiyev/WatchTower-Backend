@@ -25,10 +25,11 @@ const nfcDataSchema = new Schema(
       type: String,
       required: true,
     },
-    // user_id: {
-    //   type: String,
-    //   required: true,
-    // },
+    user_id: {
+      type: String,
+      required: true,
+    },
+   
   },
   {
     timestamps: { createdAt: true, updatedAt: false },

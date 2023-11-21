@@ -9,8 +9,7 @@ const tokenBlacklistPath = path.join(__dirname, 'tokenblacklist.txt');
 // Check if the blacklist file exists; if not, create it
 if (!fs.existsSync(tokenBlacklistPath)) {
   fs.writeFileSync(tokenBlacklistPath, '');
-}
-
+} 
 module.exports.get_All_Users = (req, res) => {
   User.find()
     .sort({ createdAt: -1 })
@@ -23,6 +22,21 @@ module.exports.get_All_Users = (req, res) => {
       console.log(err);
     });
 };
+module.exports.delete_user = async (req, res) => {
+  const { _id } = req.body;
+  try {
+    const user = await User.findOneAndDelete({ _id });
+    if (!user) {
+      console.log("User not found");
+      return res.status(404).json({ message: 'User not found' });
+    }
+    console.log("User deleted with id:", _id);
+    return res.status(200).json({ message: 'User deleted' });
+  } catch (error) {
+    console.log("Error deleting user:", error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+}
 
 function DTO(user) {
   return {
