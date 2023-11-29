@@ -14,6 +14,7 @@ const { requireAuth } = require("./middleware/authMiddleware");
 const authRoutes = require("./routes/auth_Routes");
 const nfcDataRoutes = require("./routes/nfc_dataRoutes");
 const orderRoutes = require("./routes/order_Array");
+const passwordRoutes=require("./routes/password_Routes")
 const User = require("./models/User");
 const {resetIsReadValues}=require("./controllers/nfc_dataController");
  var serviceAccount = require("/Applications/development/WatchTower-Backend/watchtower-cloud-firebase-adminsdk-3kp4f-2dc80318d8.json");
@@ -70,6 +71,7 @@ mongoose
 
     // Create an endpoint for broadcasting a message
     app.post('/broadcastFromServer', (req, res) => {
+      try{
       const message = req.body.message; // Get the message from the request body
 
       // Broadcast the message to all connected clients
@@ -80,6 +82,9 @@ mongoose
       });
 
       res.status(200).send('Message broadcasted to all clients from Firebase');
+    }catch(err){
+      res.status(400).send(err);
+    }
     });
 
     // Upgrade HTTP server to a WebSocket server
@@ -112,6 +117,7 @@ app.get("/about", (req, res) => {
 app.use("/logs", nfcDataRoutes);
 app.use("/", authRoutes);
 app.use("/order", orderRoutes);
+app.use("/password",passwordRoutes);
  
 app.post('/sendBroadcastMessage', (req, res) => {
   const { type, content, topic } = req.body;

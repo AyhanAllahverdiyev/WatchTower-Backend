@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema({
     required: true,
     
   },
+  verification_code: {
+    type: String,
+    required: false,
+    
+  },
 },
 {
   timestamps: { createdAt: true, updatedAt: false },

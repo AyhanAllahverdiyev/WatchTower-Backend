@@ -76,7 +76,18 @@ function updateIsReadValue(fileName, nameToUpdate, newValue) {
     });
   });
 }
-
+const resetRead=(req,res)=>{
+  try{
+resetIsReadValues("./order.txt");
+res.status(200).send(
+          "Read Order Reseted"
+        );
+  }
+  catch(err){
+    console.log(err);
+    res.status(500).send('Unable to reset read order')
+  }
+}
 function resetIsReadValues(fileName) {
   fs.readFile(fileName, 'utf8', (err, data) => {
     if (err) {
@@ -140,11 +151,12 @@ const reset_order = (req, res) => {
     // Check if it's the last tag in the array
     if (currentIndex === allowedOrderArray.length - 1) {
       console.log('Last tag Read, Tour Completed');
-      currentIndex = 0; // Restart from the beginning
+      currentIndex = 0; 
+
       resetIsReadValues("./order.txt");
-   //   const data=fs.readSync("./order.txt");
-      const newParse = JSON.parse(data);
-      allowedOrderArray = newParse.allowedOrderArray || [];    }
+       const newParse = JSON.parse(data);
+      allowedOrderArray = newParse.allowedOrderArray || [];   
+      }
        else {
       currentIndex = (currentIndex + 1) % allowedOrderArray.length;
     }
@@ -224,6 +236,8 @@ module.exports = {
   nfc_data_delete,
   reset_order,
   resetIsReadValues,
-  resetAllowedOrderArray
+  resetAllowedOrderArray,
+  resetRead
+
  };
  

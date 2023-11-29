@@ -150,8 +150,8 @@ module.exports.login_post = async (req, res) => {
   }
 };module.exports.logout = (req, res) => {
   const jwt = req.body.jwt;
-
-  if (isTokenBlacklisted(jwt)) {
+  console.log('Logging out user with JWT:', jwt);
+   if (isTokenBlacklisted(jwt)) {
     res.clearCookie('jwt');
     res.status(300).send('Token already blacklisted');
   } else {
@@ -168,6 +168,7 @@ function addToBlacklistFile(token) {
 
 // Function to check if a token is in the blacklist file
 function isTokenBlacklisted(token) {
+  console.log('Logging out user with JWT inside trim function:', token);
   const tokens = fs.readFileSync(tokenBlacklistPath, 'utf8').split('\n');
   return tokens.includes(token.trim());
 }
