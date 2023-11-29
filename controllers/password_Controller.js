@@ -53,11 +53,10 @@ const updatePassword = async (req, res) => {
             return res.status(401).send("Invalid password");
         }
 
-        // If password is valid, update the password (bypassing the pre middleware)
-        user.password = newPassword;
+         user.password = newPassword;
         await user.save();
 
-        res.send("User Details Updated");
+        res.send("User Password Updated");
     } catch (error) {
         res.status(500).send("Error updating password");
     }
