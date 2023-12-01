@@ -1,24 +1,3 @@
 {
-  "allowedOrderArray": [
-  {
-    "name": "1",
-    "isRead": false
-  },
-  {
-    "name": "2",
-    "isRead": false
-  },
-  {
-    "name": "3",
-    "isRead": false
-  },
-  {
-    "name": "4",
-    "isRead": false
-  },
-  {
-    "name": "5",
-    "isRead": false
-  }
-]
+  "allowedOrderArray": []
 }

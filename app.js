@@ -13,13 +13,15 @@ dotenv.config();
 const { requireAuth } = require("./middleware/authMiddleware");
 const authRoutes = require("./routes/auth_Routes");
 const nfcDataRoutes = require("./routes/nfc_dataRoutes");
-const orderRoutes = require("./routes/order_Array");
+// const orderRoutes = require("./routes/order_Array");
 const passwordRoutes=require("./routes/password_Routes")
+const tagOrderRoutes=require("./routes/tagOrder_Routes");
+const sessionRoutes=require("./routes/session_Routes");
 const User = require("./models/User");
 const {resetIsReadValues}=require("./controllers/nfc_dataController");
  var serviceAccount = require("/Applications/development/WatchTower-Backend/watchtower-cloud-firebase-adminsdk-3kp4f-2dc80318d8.json");
 const { TokenExpiredError } = require("jsonwebtoken");
- 
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -117,13 +119,11 @@ app.get("/about", (req, res) => {
 
 app.use("/logs", nfcDataRoutes);
 app.use("/", authRoutes);
-app.use("/order", orderRoutes);
+// app.use("/order", orderRoutes);
 app.use("/password",passwordRoutes);
-
+app.use("/tagOrder",tagOrderRoutes);
+app.use("/session"  ,sessionRoutes);
 app.get('/sendHelloMessage', (req, res) => {
- 
-  
-
   admin.messaging().send({
     token: "d_ireUT9y0v6lfmNmypg-a:APA91bFuBH8Bx7rVPE_lwGKUAEvec6D-n9qDTdOXDTJL0z3WsAI0MpTlwRuXm_msdss7vvTim8Si3zoHUos0RItU8aj4RxIWOnXbio31dAZrvEVm63jc_eEKEykBMDsLfTsE7mJFFBSl",
     data: {

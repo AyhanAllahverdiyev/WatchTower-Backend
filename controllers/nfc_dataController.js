@@ -5,9 +5,8 @@ const { json } = require("body-parser");
 const { reset } = require("nodemon");
 const User = require("../models/User");
 const { Console } = require("console");
-
-
-
+const Session=require("../models/session")
+const tagOrder=require("../models/tagOrder")
 function resetAllowedOrderArray() {
   const data = fs.readFileSync("./order.txt", "utf8");
   const parsedData = JSON.parse(data);
@@ -26,8 +25,7 @@ const nfc_data_index = (req, res) => {
       console.log(err);
     });
 };
-
-const nfc_data_details = (req, res) => { 
+ const nfc_data_details = (req, res) => { 
   const id = req.params.id;
   NFCData.findById(id) 
     .then((result) => {
@@ -41,6 +39,170 @@ const nfc_data_details = (req, res) => {
 const nfc_data_create_get = (req, res) => {
   res.render("create", { title: "Create a new NFC Data" });
 }; 
+
+
+const nfc_data_delete = (req, res) => {
+  const id = req.params.id;
+  //delete everything in the database
+  NFCData.findByIdAndDelete(id)
+    .then((result) => {
+      res.json({ redirect: "/logs" });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+
+const user_read_history=(req,res)=>{
+  try{
+  const id = req.body._id;
+    console.log(id);
+  NFCData.find({user_id:id})
+ .then((result)=>{
+  if(result.length==0 ){
+    console.log("User not found");
+    return res.status(404).json({message:'User not found'});
+  }
+  else{ 
+  console.log(result);
+  res.status(200).json(result);
+  }
+ })
+}catch(err){
+  res.statuscode(500).send('Unable to get user read history')
+}
+  
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ async function getUserSession(userId) {
+  try {
+    const userSession = await Session.findOne({ userId, isActive: true });
+
+    return userSession;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+async function updateIsReadToFalse(userId) {
+  try {
+    // Assuming `Session` is your Mongoose model
+    const userSession = await Session.findOne({ userId });
+
+    if (!userSession) {
+      console.log("User session not found");
+      return null;
+    }
+    for (const item of userSession.tagOrderIsread) {
+      console.log(item.isRead);
+      item.isRead = false;
+      
+     }
+    await userSession.save();
+
+    console.log("isRead values updated successfully");
+    return userSession;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+
+
+const nfc_data_create_post = async (req, res) => {
+  try {
+    const user_id = req.body.user_id;
+    const card_id = req.body.ID;
+
+    const userSession = await getUserSession(user_id);
+
+    if (!userSession) {
+      console.log("User session not found or inactive");
+      return res.status(404).json({ message: "User session not found or inactive" });
+    }
+
+    console.log("ORDER ARRAY FROM SESSION:", userSession.tagOrderIsread);
+
+    const allowedOrderArray = userSession.tagOrderIsread;
+
+    if (allowedOrderArray.length === 0) {
+      console.log("Allowed order array is empty");
+      return res.status(404).json({ message: "Allowed order array is empty" });
+    }
+
+    let tourCompleted = true;
+    let expectedItemID = '';
+
+    for (const item of allowedOrderArray) {
+      if (item.isRead === false) {
+        tourCompleted = false; // At least one item is not read
+        expectedItemID = item.name;
+        break;
+      }
+    }
+
+    if (tourCompleted) {
+      updateIsReadToFalse(user_id);
+      console.log("All tags are already read, tour completed");
+        console.log("=============================================");
+        
+        console.log("=============================================");
+
+          return res.status(302).json({ message: "Tour Completed" });
+    }
+
+    if (card_id === expectedItemID) {
+      try {
+        await NFCData.create(req.body);
+
+        const updatedUserSession = userSession.tagOrderIsread.map((item) => {
+          if (item.name === expectedItemID) {
+            return { ...item, isRead: true };
+          }
+          return item;
+        });
+
+        userSession.tagOrderIsread = updatedUserSession;
+        await userSession.save();
+
+        res.status(200).json({ message: "Tag data Read" });
+      } catch (err) {
+        console.log(err);
+        res.status(500).send('Unable to save tag data');
+      }
+    } else {
+      console.log("Expected item ID:", expectedItemID);
+      console.log("Received item ID:", card_id);
+      res.status(404).json({ message: "Wrong tag scanned", expectedTagID: expectedItemID, receivedTagID: card_id });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+ 
+ /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function updateIsReadValue(fileName, nameToUpdate, newValue) {
   fs.readFile(fileName, 'utf8', (err, data) => {
     if (err) {
@@ -128,6 +290,10 @@ let allowedOrderArray = [];
  
 
 let currentIndex = 0;
+ 
+
+
+
 const reset_order = (req, res) => {
   try{
   currentIndex = 0;
@@ -140,92 +306,8 @@ const reset_order = (req, res) => {
     res.status(500).send('Unable to reset read order')
   }
  };
- const nfc_data_create_post = (req, res) => {
-  console.log("nfc_data_create_post");
-
-  const requestedId = req.body.ID;
-
-  if (requestedId === allowedOrderArray[currentIndex]?.name.toString()) {
-    allowedOrderArray[currentIndex].isRead = true;
-
-    // Check if it's the last tag in the array
-    if (currentIndex === allowedOrderArray.length - 1) {
-      console.log('Last tag Read, Tour Completed');
-      currentIndex = 0; 
-
-      resetIsReadValues("./order.txt");
-       const newParse = JSON.parse(data);
-      allowedOrderArray = newParse.allowedOrderArray || [];   
-      }
-       else {
-      currentIndex = (currentIndex + 1) % allowedOrderArray.length;
-    }
-
-    console.log(allowedOrderArray);
-    console.log(`currentIndex: ${currentIndex}`);
-    
-    const nfc_data = new NFCData(req.body);
-    nfc_data
-      .save()
-      .then((result) => {
-        console.log("Successfully saved to Database");
-        updateIsReadValue("./order.txt", requestedId, true);
-
-        // Respond after processing
-        if (currentIndex === 0) {
-          res.status(302).send("SavedToDB:TRUE, Tour Completed");
-          resetIsReadValues("./order.txt");
-        } else {
-          res.status(200).send("SavedToDB:TRUE");
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).send("Error saving to database");
-      });
-  } else {
-    console.log(
-      `Expected ID: ${allowedOrderArray[currentIndex]?.name}, Received ID: ${requestedId}`
-    );
-    res.status(400).send(
-      `Please read ${allowedOrderArray[currentIndex]?.name} instead of ${requestedId}`
-    );
-  }
-};
-
-const nfc_data_delete = (req, res) => {
-  const id = req.params.id;
-  //delete everything in the database
-  NFCData.findByIdAndDelete(id)
-    .then((result) => {
-      res.json({ redirect: "/logs" });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
-
-const user_read_history=(req,res)=>{
-  try{
-  const id = req.body._id;
-    console.log(id);
-  NFCData.find({user_id:id})
- .then((result)=>{
-  if(result.length==0 ){
-    console.log("User not found");
-    return res.status(404).json({message:'User not found'});
-  }
-  else{ 
-  console.log(result);
-  res.status(200).json(result);
-  }
- })
-}catch(err){
-  res.statuscode(500).send('Unable to get user read history')
-}
   
-}
+
 
 module.exports = {
   user_read_history,
