@@ -6,7 +6,8 @@ const { reset } = require("nodemon");
 const User = require("../models/User");
 const { Console } = require("console");
 const Session=require("../models/session")
-const tagOrder=require("../models/tagOrder")
+const tagOrder=require("../models/tagOrder");
+const { TLSSocket } = require("tls");
 function resetAllowedOrderArray() {
   const data = fs.readFileSync("./order.txt", "utf8");
   const parsedData = JSON.parse(data);
@@ -87,33 +88,24 @@ const user_read_history=(req,res)=>{
     console.error(error);
     return null;
   }
-}
-async function updateIsReadToFalse(userId) {
+} 
+
+async function checkTour(userId) {
   try {
-    // Assuming `Session` is your Mongoose model
-    const userSession = await Session.findOne({ userId });
+    const userSession = await Session.findOne({ userId, isActive: true });
 
-    if (!userSession) {
-      console.log("User session not found");
-      return null;
-    }
     for (const item of userSession.tagOrderIsread) {
-      console.log(item.isRead);
-      item.isRead = false;
-      
-     }
-    await userSession.save();
-
-    console.log("isRead values updated successfully");
-    return userSession;
+      if (item.isRead === false) {
+        return false;
+      }
+    }
+    return true;
   } catch (error) {
     console.error(error);
     return null;
   }
 }
-
-
-
+ 
 const nfc_data_create_post = async (req, res) => {
   try {
     const user_id = req.body.user_id;
@@ -134,30 +126,22 @@ const nfc_data_create_post = async (req, res) => {
       console.log("Allowed order array is empty");
       return res.status(404).json({ message: "Allowed order array is empty" });
     }
-
-    let tourCompleted = true;
-    let expectedItemID = '';
+    console.log("=============================================");
+        
+     let expectedItemID = '';
 
     for (const item of allowedOrderArray) {
-      if (item.isRead === false) {
-        tourCompleted = false; // At least one item is not read
-        expectedItemID = item.name;
+       if (item.isRead === false) {
+         
+         expectedItemID = item.name;
         break;
       }
     }
-
-    if (tourCompleted) {
-      updateIsReadToFalse(user_id);
-      console.log("All tags are already read, tour completed");
-        console.log("=============================================");
-        
-        console.log("=============================================");
-
-          return res.status(302).json({ message: "Tour Completed" });
-    }
+ 
 
     if (card_id === expectedItemID) {
-      try {
+   
+      
         await NFCData.create(req.body);
 
         const updatedUserSession = userSession.tagOrderIsread.map((item) => {
@@ -169,22 +153,41 @@ const nfc_data_create_post = async (req, res) => {
 
         userSession.tagOrderIsread = updatedUserSession;
         await userSession.save();
-
-        res.status(200).json({ message: "Tag data Read" });
-      } catch (err) {
-        console.log(err);
-        res.status(500).send('Unable to save tag data');
-      }
+        if ( await checkTour(user_id)) {
+          console.log("Tour completed");
+          console.log("=============================================");
+          const updatedUserSession = userSession.tagOrderIsread.map((item) => {
+         
+            return { ...item, isRead: false };
+           
+         });
+  
+        userSession.tagOrderIsread = updatedUserSession;
+        await userSession.save();
+       
+         console.log("Tour completed");
+          
+          console.log("============================================= FINAL VERSION AFTER TOUR =================================");
+          console.log( userSession.tagOrderIsread);
+            return res.status(302).json({ message: "Tour Completed" });
+         }
+        else{
+        res.status(200).json({ message: "Card read successfully" });
+        }
+   
     } else {
       console.log("Expected item ID:", expectedItemID);
       console.log("Received item ID:", card_id);
-      res.status(404).json({ message: "Wrong tag scanned", expectedTagID: expectedItemID, receivedTagID: card_id });
+      res.status(400).json({ message: "Wrong tag scanned", expectedTagID: expectedItemID, receivedTagID: card_id });
     }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+ 
+
 
  
  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
