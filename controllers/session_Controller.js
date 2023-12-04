@@ -2,7 +2,8 @@ const express=require("express");
 const { json } = require("body-parser");
  const SessionData  = require('../models/session');
 const { mongo } = require("mongoose");
- module.exports.session_Check = async (req, res) => {
+const NFCData=require("../models/nfc_data");
+const session_Check = async (req, res) => {
   try {
     const userId = req.body.id;
    
@@ -24,7 +25,7 @@ const { mongo } = require("mongoose");
     res.status(500).json({ error: error.message});
   }
 };
-module.exports.session_end = async (req, res) => {
+const session_end = async (req, res) => {
   try {
     const userId = req.body.id;
     console.log(userId);
@@ -50,7 +51,7 @@ module.exports.session_end = async (req, res) => {
 
 
 
-module.exports.session_Create = async (req, res) => {
+const session_Create = async (req, res) => {
          try {
          
            
@@ -71,6 +72,65 @@ module.exports.session_Create = async (req, res) => {
         } catch (error) {
         console.log(error);
           res.status(500).json({ error: error.message });
-        }
-      ;
+        }   
+}
+
+
+
+
+const user_read_history_session=async (req,res)=>   {
+  try{  
+    const {user_id,session_id}=req.body;
+  NFCData.find({user_id,session_id}).then((result)=>{ 
+   console.log(result);
+      if(result.length==0){
+        console.log('User not found or session read empty');
+        res.status(404).json({message:'User not found or session read empty'})
+      }
+      else{
+        res.status(200).json(result);
+      }
+    });
+    
+
+
+  }
+  catch(err){
+    console.log(err);
+    res.status(500).json({message:"Unable to get user read history for Session"})
+  }
+}
+function DTO(data) {
+  return data.map(item => ({
+    userId: item.userId,
+    isActive: item.isActive,
+    createdAt: item.createdAt
+  }));
+}
+
+
+const get_all_session_for_user= (req,res)=>{
+  try{
+  const {user_id}=req.body;
+    SessionData.find({userId:user_id}).then((result)=>{
+    console.log(DTO(result));
+    if(result.length==0){
+      console.log('session history empty');
+      res.status(404).json({message:'session history empty'});
+    }else{
+      res.status(200).json(DTO(result));
+    }
+  }); 
+}catch(err){
+  console.log(err);
+  res.status(500).json({message:"unable to get session history for user"});
+}
+}
+ 
+module.exports={
+  session_Check,
+  session_Create,
+  session_end,
+  user_read_history_session,
+  get_all_session_for_user
 }

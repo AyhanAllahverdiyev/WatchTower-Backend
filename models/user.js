@@ -28,6 +28,8 @@ const userSchema = new mongoose.Schema({
   user_name: {
     type: String,
     required: true,
+    minlength: [6, "Minimum username length is 6 characters"],
+
     
   },
 },
@@ -43,8 +45,7 @@ userSchema.pre("save", async function (next) {
   next();
 });
  
-// static method to login user
-userSchema.statics.login = async function (email, password) {
+ userSchema.statics.login = async function (email, password) {
    const user = await this.findOne({ email });
    if (user) {
     const auth = await bcrypt.compare(password, user.password);

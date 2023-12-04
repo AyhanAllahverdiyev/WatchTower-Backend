@@ -21,6 +21,8 @@ const nfc_data_index = (req, res) => {
       console.log(err);
     });
 };
+
+
  const nfc_data_details = (req, res) => { 
   const id = req.params.id;
   NFCData.findById(id) 
@@ -39,8 +41,7 @@ const nfc_data_create_get = (req, res) => {
 
 const nfc_data_delete = (req, res) => {
   const id = req.params.id;
-  //delete everything in the database
-  NFCData.findByIdAndDelete(id)
+   NFCData.findByIdAndDelete(id)
     .then((result) => {
       res.json({ redirect: "/logs" });
     })
@@ -70,6 +71,9 @@ const user_read_history=(req,res)=>{
 }
   
 }
+
+
+ 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
