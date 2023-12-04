@@ -11,6 +11,5 @@ router.post("/logout", authController.logout);
   router.post("/jwt-verify", authController.jwt_verify);
 router.get('/get_all_users',authController.get_All_Users);
 router.post('/change_auth_level',authController.change_auth_level);
-router.get("/reset", nfcDataController.reset_order); 
-router.post("/user_delete", authController.delete_user);
+ router.post("/user_delete", authController.delete_user);
 module.exports = router;

@@ -12,6 +12,11 @@ const sessionSchema = new mongoose.Schema({
   tagOrderIsread: {
     type: Array,
     required: true,
+  },
+  session_id:{
+    type: String,
+    required : false
+
   }
 },
 {

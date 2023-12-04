@@ -93,8 +93,7 @@ mongoose
     // Upgrade HTTP server to a WebSocket server
     const server = app.listen(port,()=>{
       console.log(`Server is running on port ${port}`);
-      resetIsReadValues("./order.txt");
-    });
+     });
     server.on('upgrade', (request, socket, head) => {
       wss.handleUpgrade(request, socket, head, (ws) => {
         wss.emit('connection', ws, request);
