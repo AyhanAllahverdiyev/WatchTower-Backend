@@ -25,6 +25,11 @@ const userSchema = new mongoose.Schema({
     required: false,
     
   },
+  user_name: {
+    type: String,
+    required: true,
+    
+  },
 },
 {
   timestamps: { createdAt: true, updatedAt: false },

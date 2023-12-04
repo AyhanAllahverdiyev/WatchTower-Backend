@@ -6,8 +6,7 @@ const path =require('path');
 dotenv.config();
 const SecretString= process.env.secret.toString();
 const tokenBlacklistPath = path.join(__dirname, 'tokenblacklist.txt');
-// Check if the blacklist file exists; if not, create it
-if (!fs.existsSync(tokenBlacklistPath)) {
+ if (!fs.existsSync(tokenBlacklistPath)) {
   fs.writeFileSync(tokenBlacklistPath, '');
 } 
 module.exports.get_All_Users = (req, res) => {
@@ -123,10 +122,10 @@ module.exports.login_get = (req, res) => {
 };
 
 module.exports.signup_post = async (req, res) => {
-  const { email, password ,auth_level} = req.body;
+  const { email, password ,auth_level,user_name} = req.body;
 
   try {
-    const user = await User.create({ email, password,auth_level });
+    const user = await User.create({ email, password,auth_level,user_name});
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
     res.status(201).json({ user: user._id });
@@ -150,8 +149,7 @@ module.exports.login_post = async (req, res) => {
   }
 };module.exports.logout = (req, res) => {
   const jwt = req.body.jwt;
-  console.log('Logging out user with JWT:', jwt);
-   if (isTokenBlacklisted(jwt)) {
+    if (isTokenBlacklisted(jwt)) {
     res.clearCookie('jwt');
     res.status(300).send('Token already blacklisted');
   } else {
@@ -168,8 +166,7 @@ function addToBlacklistFile(token) {
 
 // Function to check if a token is in the blacklist file
 function isTokenBlacklisted(token) {
-  console.log('Logging out user with JWT inside trim function:', token);
-  const tokens = fs.readFileSync(tokenBlacklistPath, 'utf8').split('\n');
+   const tokens = fs.readFileSync(tokenBlacklistPath, 'utf8').split('\n');
   return tokens.includes(token.trim());
 }
  
@@ -207,7 +204,7 @@ function isTokenBlacklisted(token) {
   sendAccessTokenCookie = (res, newAccessToken) => {
     res.cookie('jwt', newAccessToken, {
       httpOnly: true,
-      maxAge: maxAge * 1000, // Convert seconds to milliseconds
+      maxAge: maxAge * 1000,  
     });
   };
   

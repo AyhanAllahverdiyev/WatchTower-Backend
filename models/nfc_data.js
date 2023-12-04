@@ -29,6 +29,11 @@ const nfcDataSchema = new Schema(
       type: String,
       required: true,
     },
+      session_id:{
+        type: String,
+        required : true
+      
+    }
    
   },
   {
