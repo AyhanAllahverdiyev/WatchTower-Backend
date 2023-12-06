@@ -5,8 +5,9 @@ const { json } = require("body-parser");
 
 module.exports.tagOrder_Get = (req, res) => {
     try {
-        tagOrder.find({}, 'index name isRead')  
+        tagOrder.find({}, 'index name isRead card_id')  
             .then((result) => {
+                console.log(result);
                 res.send(result);
             })
             .catch((err) => {
@@ -23,8 +24,8 @@ module.exports.tagOrder_Get = (req, res) => {
         const data = req.body; 
         
         const tagOrderObjects = data.map(item => {
-            const { name, isRead, index } = item;
-            return { name, isRead, index };
+            const { name, isRead, index,card_id,loc } = item;
+            return { name, isRead, index ,card_id,loc};
         });
          await tagOrder.deleteMany({}); 
         const insertedData = await tagOrder.insertMany(tagOrderObjects);

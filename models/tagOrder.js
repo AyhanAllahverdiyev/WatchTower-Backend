@@ -12,7 +12,12 @@ const tagOrderSchema = new mongoose.Schema({
   index: {
     type: Number,
     required: true,
-  }
+  },
+  card_id :{
+    type: String,
+    required: true,
+  } 
+  
 },
 {
   timestamps: { createdAt: false, updatedAt: false },
