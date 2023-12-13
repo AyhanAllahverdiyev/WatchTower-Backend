@@ -5,10 +5,17 @@ const { json } = require("body-parser");
 
 module.exports.tagOrder_Get = (req, res) => {
     try {
-        tagOrder.find({}, 'index name isRead card_id')  
+        tagOrder.find({}, { _id: 0, __v: 0 })
             .then((result) => {
-                console.log(result);
-                res.send(result);
+                const modifiedResult = result.map(item => ({
+                    loc: item.loc,
+                    name: item.name,
+                    isRead: item.isRead,
+                    index: item.index,
+                    card_id: item.card_id,
+                }));
+                console.log(modifiedResult);
+                res.send(modifiedResult);
             })
             .catch((err) => {
                 console.log(err);
@@ -19,6 +26,7 @@ module.exports.tagOrder_Get = (req, res) => {
         res.status(500).send(err);
     }
 };
+
  module.exports.tagOrder_Post = async (req, res) => {
     try {
         const data = req.body; 

@@ -16,7 +16,17 @@ const tagOrderSchema = new mongoose.Schema({
   card_id :{
     type: String,
     required: true,
-  } 
+  },
+  loc: {
+    lat: {
+      type: String,
+      required: true,
+    },
+    long: {
+      type: String,
+      required: true,
+    },
+  },
   
 },
 {

@@ -71,13 +71,18 @@ const user_read_history=(req,res)=>{
 }
   
 }
-  
+
+
+ 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
  async function getUserSession(userId) {
   try {
-    const userSession = await Session.findOne({ userId, isActive:true});
+    const userSession = await Session.findOne({ userId, isActive: true });
 
-    return userSession;x
+    return userSession;
   } catch (error) {
     console.error(error);
     return null;
@@ -103,7 +108,8 @@ async function checkTour(userId) {
 const nfc_data_create_post = async (req, res) => {
   try {
     const user_id = req.body.user_id;
-    const card_id = req.body.ID;
+    const card_id = req.body.card_id;
+    const name=req.body.name;
     const session_id=req.body.session_id;
 
     const userSession = await getUserSession(user_id);
@@ -129,18 +135,19 @@ const nfc_data_create_post = async (req, res) => {
        if (item.isRead === false) {
          
          expectedItemID = item.name;
+         expectedItemCardID=item.card_id;
         break;
       }
     }
  
 
-    if (card_id === expectedItemID) {
+    if (card_id === expectedItemCardID) {
    
       
         await NFCData.create(req.body);
 
         const updatedUserSession = userSession.tagOrderIsread.map((item) => {
-          if (item.name === expectedItemID) {
+          if (item.card_id === expectedItemCardID) {
             return { ...item, isRead: true };
           }
           return item;
@@ -152,9 +159,7 @@ const nfc_data_create_post = async (req, res) => {
           console.log("Tour completed");
           console.log("=============================================");
           const updatedUserSession = userSession.tagOrderIsread.map((item) => {
-         
             return { ...item, isRead: false };
-           
          });
   
         userSession.tagOrderIsread = updatedUserSession;
@@ -172,8 +177,8 @@ const nfc_data_create_post = async (req, res) => {
    
     } else {
       console.log("Expected item ID:", expectedItemID);
-      console.log("Received item ID:", card_id);
-      res.status(400).json({ expectedItemID :expectedItemID, receivedItemID: card_id});
+      console.log("Received item ID:", name);
+      res.status(400).json({ expectedItemID :expectedItemID, receivedItemID: name});
     }
   } catch (error) {
     console.error(error);
