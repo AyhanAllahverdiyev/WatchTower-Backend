@@ -62,8 +62,7 @@ const user_read_history=(req,res)=>{
     return res.status(404).json({message:'User not found'});
   }
   else{ 
-  console.log(result);
-  res.status(200).json(result);
+   res.status(200).json(result);
   }
  })
 }catch(err){
@@ -108,8 +107,8 @@ async function checkTour(userId) {
 const nfc_data_create_post = async (req, res) => {
   try {
     const user_id = req.body.user_id;
-    const card_id = req.body.card_id;
-    const name=req.body.name;
+    const received_cardID = req.body.card_id;
+    const received_NAME=req.body.name;
     const session_id=req.body.session_id;
 
     const userSession = await getUserSession(user_id);
@@ -129,19 +128,23 @@ const nfc_data_create_post = async (req, res) => {
     }
     console.log("=============================================");
         
-     let expectedItemID = '';
+     let expectedItemName = '';
+     let expectedItemCardID='';
 
+  
     for (const item of allowedOrderArray) {
        if (item.isRead === false) {
          
-         expectedItemID = item.name;
+         expectedItemName = item.name;
          expectedItemCardID=item.card_id;
         break;
       }
     }
- 
+    console.log("Expected item NAME:", expectedItemName);
+    console.log("Received item NAME:", received_NAME);
 
-    if (card_id === expectedItemCardID) {
+
+    if (received_cardID === expectedItemCardID) {
    
       
         await NFCData.create(req.body);
@@ -176,9 +179,9 @@ const nfc_data_create_post = async (req, res) => {
         }
    
     } else {
-      console.log("Expected item ID:", expectedItemID);
-      console.log("Received item ID:", name);
-      res.status(400).json({ expectedItemID :expectedItemID, receivedItemID: name});
+      console.log("Expected item ID:", expectedItemCardID);
+      console.log("Received item ID:", received_cardID);
+      res.status(400).json({ expectedItemNAME :expectedItemName, receivedItemNAME: received_NAME});
     }
   } catch (error) {
     console.error(error);

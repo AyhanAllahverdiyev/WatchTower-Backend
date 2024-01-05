@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const nfcDataSchema = new Schema(
   {
-    ID: {
+    card_id: {
       type: String,
       required: true,
     },

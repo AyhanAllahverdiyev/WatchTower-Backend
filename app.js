@@ -118,7 +118,6 @@ app.get("/about", (req, res) => {
 
 app.use("/logs", nfcDataRoutes);
 app.use("/", authRoutes);
-// app.use("/order", orderRoutes);
 app.use("/password",passwordRoutes);
 app.use("/tagOrder",tagOrderRoutes);
 app.use("/session"  ,sessionRoutes);

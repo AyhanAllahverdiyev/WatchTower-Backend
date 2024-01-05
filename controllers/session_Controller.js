@@ -17,7 +17,7 @@ const session_Check = async (req, res) => {
       const sessionId= userSession[0].session_id;
       res.status(200).json({ message: 'Session active', data,sessionId});
     } else {
-      console.log('No session found');
+      console.log('No active session found');
       res.status(404).json({ message: 'No session found' });
     }
   } catch (error) {
@@ -25,6 +25,7 @@ const session_Check = async (req, res) => {
     res.status(500).json({ error: error.message});
   }
 };
+
 const session_end = async (req, res) => {
   try {
     const userId = req.body.id;
@@ -53,8 +54,6 @@ const session_end = async (req, res) => {
 
 const session_Create = async (req, res) => {
          try {
-         
-           
           const { userId, isActive, tagOrderIsread } = req.body;
           const userSession = await SessionData.find({ userId: userId, isActive: true });
           if (userSession.length > 0) {
@@ -109,7 +108,7 @@ function DTO(data) {
 }
 
 
-const get_all_session_for_user= (req,res)=>{
+const get_all_session_for_user= async (req,res)=>{
   try{
   const {user_id}=req.body;
     SessionData.find({userId:user_id}).then((result)=>{
@@ -127,10 +126,38 @@ const get_all_session_for_user= (req,res)=>{
 }
 }
  
+
+const updateExistingSessionCardOrder = async (req, res) => {
+  try {
+    const { session_id, newTagOrderIsread } = req.body;
+
+    const userSession = await SessionData.findOne({ session_id: session_id, isActive: true });
+    console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-');
+console.log(userSession);
+
+console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-')
+    if (userSession) {
+       await SessionData.findOneAndUpdate(
+        { session_id: session_id, isActive: true },
+        { $set: { tagOrderIsread: newTagOrderIsread } }
+      );
+
+      res.status(200).json({ message: 'Session card order updated' });
+    } else {
+      res.status(404).json({ message: 'Unable to find ongoing session' });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Unable to update session card order' });
+  }
+};
+
+
 module.exports={
   session_Check,
   session_Create,
   session_end,
   user_read_history_session,
-  get_all_session_for_user
+  get_all_session_for_user,
+  updateExistingSessionCardOrder
 }

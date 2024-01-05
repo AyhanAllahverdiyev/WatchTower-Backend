@@ -58,6 +58,7 @@ const updatePassword = async (req, res) => {
 
         res.send("User Password Updated");
     } catch (error) {
+        console.log(error);
         res.status(500).send("Error updating password");
     }
 };
