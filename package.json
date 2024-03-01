@@ -40,7 +40,7 @@
   "ejs": "^3.1.9",
   
     
-  "express": "^4.18.2",
+  "express": "^4.18.3",
   
     
   "firebase-admin": "^11.11.0",
@@ -58,13 +58,16 @@
   "mongodb": "^6.0.0",
   
     
-  "mongoose": "^7.5.0",
+  "mongoose": "^7.6.9",
   
     
   "mongoose-timestamp": "^0.6.0",
   
     
   "morgan": "^1.10.0",
+  
+    
+  "multer": "^1.4.5-lts.1",
   
     
   "nodemailer": "^6.9.7",
