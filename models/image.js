@@ -5,6 +5,7 @@ const imageSchema = new mongoose.Schema({
     type: Buffer, // Store the image data as a Buffer
     required: true
   },
+  
  
 });
 
