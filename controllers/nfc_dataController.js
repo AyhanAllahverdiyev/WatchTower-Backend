@@ -4,10 +4,11 @@ const NFCData = require("../models/nfc_data");
 const { json } = require("body-parser");
 const { reset } = require("nodemon");
 const User = require("../models/User");
-const { Console } = require("console");
+const { Console, count } = require("console");
 const Session=require("../models/session")
 const tagOrder=require("../models/tagOrder");
 const { TLSSocket } = require("tls");
+const { tagOrder_Get } = require("./tagOrder_Controllers");
  
 
 
@@ -49,13 +50,17 @@ const nfc_data_delete = (req, res) => {
       console.log(err);
     });
 };
+ 
 
 
-const user_read_history=(req,res)=>{
+
+
+
+const user_read_history= async(req,res)=>{
   try{
   const id = req.body._id;
     console.log(id);
-  NFCData.find({user_id:id})
+ await  NFCData.find({user_id:id})
  .then((result)=>{
   if(result.length==0 ){
     console.log("User not found");
@@ -189,16 +194,16 @@ const nfc_data_create_post = async (req, res) => {
   }
 };
 
- 
+  
 
 
  
  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+ 
 
 module.exports = {
-  user_read_history,
+    user_read_history,
   nfc_data_index,
   nfc_data_details,
   nfc_data_create_get,

@@ -1,4 +1,6 @@
 const express=require("express");
+const User = require("../models/User");
+
 const { json } = require("body-parser");
  const SessionData  = require('../models/session');
 const { mongo } = require("mongoose");
@@ -152,8 +154,59 @@ console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   }
 };
 
+const getUserCount= async (req, res)=>{
+  try{
+    const count=await User.countDocuments();
+    console.log(count);
+    res.status(200).json({count});
+  }catch(err){
+    console.log(err);
+    res.status(500).json({message:"Unable to get user count"});
+  }
 
+
+
+
+}
+
+
+
+
+
+
+
+const getActiveSessionNumber= async(req,res)=>{
+  try{ 
+  const count =await SessionData.find({isActive:true}).countDocuments();
+  console.log("Active session number:",count);
+  res.status(200).json({count});
+  }catch(err){
+    console.log(err);
+    res.status(500).json({message:"Unable to get active session number"});
+  }
+
+}
+
+
+const getActiveSessions=async(req,res)=>{
+  try{
+  const response= await SessionData.find({isActive:true});
+  console.log(response);
+  res.status(200).json(response);
+
+    }
+
+  catch (err){  
+    console.log(err);
+    res.status(500).json({message:"Unable to get active sessions"});  
+  }
+
+
+}
 module.exports={
+  getActiveSessions,
+  getActiveSessionNumber,
+  getUserCount,
   session_Check,
   session_Create,
   session_end,
