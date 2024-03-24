@@ -8,9 +8,23 @@ const imageSchema = new mongoose.Schema({
   contentType: {
     type: String, // Store the image MIME type
     required: true
+  },
+  alertType: {
+    type: String,
+    required: true
+  },
+  alertBody:{
+    type: String,
+    required: true
+
+  },
+  userEmail :{
+    type: String,
+    required:true
   }
+  
 }, {
-  timestamps: true
+  timestamps: true, updatedAt: true, createdAt: true
 
  
 });

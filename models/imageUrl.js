@@ -5,6 +5,10 @@ const imageUrlSchema = new mongoose.Schema({
   imageUrl:{
     type:String,
     required:true
+},
+imageId:{
+  type:String,
+  required:true
 }
 }, {
   timestamps: true

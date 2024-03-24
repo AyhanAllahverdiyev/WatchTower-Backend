@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 const tagorderSche=require("../models/tagOrder");
 const sessionSchema = new mongoose.Schema({
+  email:{
+    type: String,
+    required: false,
+
+  },
   userId: {
     type: String,
     required: true,
@@ -20,7 +25,7 @@ const sessionSchema = new mongoose.Schema({
   }
 },
 {
-  timestamps: { createdAt: true, updatedAt: false },
+  timestamps: { createdAt: true, updatedAt: true },
   collection: "session",
 });
  

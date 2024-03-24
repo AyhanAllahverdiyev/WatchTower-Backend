@@ -6,4 +6,6 @@ router.post('/deleteImage/:id', pictureController.deleteImage);
 router.get('/image/:id',pictureController.getImageUrl);
 router.get('/allPictureUrls',pictureController.getAllImageUrls); 
 router.get('/imageViaUrl/:id',pictureController.getImageViaUrl);
+router.get('/alertNumber',pictureController.alertNumber);
+router.post('/showAlertByIndex',pictureController.showAlertByIndex);
 module.exports=router;

@@ -56,13 +56,18 @@ const session_end = async (req, res) => {
 
 const session_Create = async (req, res) => {
          try {
+          
+
           const { userId, isActive, tagOrderIsread } = req.body;
+          const email=await User.findOne({_id:(userId)});
+          console.log('Email:============================>',email.email);
           const userSession = await SessionData.find({ userId: userId, isActive: true });
           if (userSession.length > 0) {
             res.status(400).json({ message: 'Session already active' });
           
           }else{
            const sessionData = await SessionData.create({
+            email:email.email,
             userId,
             isActive: true,
             tagOrderIsread, 
@@ -203,6 +208,9 @@ const getActiveSessions=async(req,res)=>{
 
 
 }
+ 
+
+ 
 module.exports={
   getActiveSessions,
   getActiveSessionNumber,

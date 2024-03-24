@@ -32,7 +32,13 @@ const port = process.env.PORT || 3001;
 const dbURI = process.env.MONGODB_URI;
 const app = express();
 
-app.use(cors());
+app.use(cors(
+  {
+    origin: 'http://localhost:3000',
+    credentials: true,
+//    exposedHeaders: ["set-cookie"],
+  }
+));
 
 
 
@@ -125,14 +131,14 @@ app.use("/password", passwordRoutes);
 app.use("/tagOrder", tagOrderRoutes);
 app.use("/session", sessionRoutes);
 app.use ("/picture",pictureRoutes);
-app.get('/sendHelloMessage', (req, res) => {
-  admin.messaging().send({
-    token: "d_ireUT9y0v6lfmNmypg-a:APA91bFuBH8Bx7rVPE_lwGKUAEvec6D-n9qDTdOXDTJL0z3WsAI0MpTlwRuXm_msdss7vvTim8Si3zoHUos0RItU8aj4RxIWOnXbio31dAZrvEVm63jc_eEKEykBMDsLfTsE7mJFFBSl",
-    data: {
-      hello: "world",
-    },
-  }).then((response) => {
-    console.log('Successfully sent message:', response);
-  });
-  res.status(200).send('Message sent to device');
-});
+//app.get('/sendHelloMessage', (req, res) => {
+//   admin.messaging().send({
+//     token: "d_ireUT9y0v6lfmNmypg-a:APA91bFuBH8Bx7rVPE_lwGKUAEvec6D-n9qDTdOXDTJL0z3WsAI0MpTlwRuXm_msdss7vvTim8Si3zoHUos0RItU8aj4RxIWOnXbio31dAZrvEVm63jc_eEKEykBMDsLfTsE7mJFFBSl",
+//     data: {
+//       hello: "world",
+//     },
+//   }).then((response) => {
+//     console.log('Successfully sent message:', response);
+//   });
+//   res.status(200).send('Message sent to device');
+// });
