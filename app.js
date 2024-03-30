@@ -21,7 +21,7 @@ const User = require("./models/User");
 const { resetIsReadValues } = require("./controllers/nfc_dataController");
 var serviceAccount = require("/Applications/development/WatchTower-Backend/watchtower-cloud-firebase-adminsdk-3kp4f-2dc80318d8.json");
 const { TokenExpiredError } = require("jsonwebtoken");
-
+const webStatistics= require('./routes/web_statistics')
 const admin = require("firebase-admin");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -131,6 +131,7 @@ app.use("/password", passwordRoutes);
 app.use("/tagOrder", tagOrderRoutes);
 app.use("/session", sessionRoutes);
 app.use ("/picture",pictureRoutes);
+app.use("/web_statistics",webStatistics);
 //app.get('/sendHelloMessage', (req, res) => {
 //   admin.messaging().send({
 //     token: "d_ireUT9y0v6lfmNmypg-a:APA91bFuBH8Bx7rVPE_lwGKUAEvec6D-n9qDTdOXDTJL0z3WsAI0MpTlwRuXm_msdss7vvTim8Si3zoHUos0RItU8aj4RxIWOnXbio31dAZrvEVm63jc_eEKEykBMDsLfTsE7mJFFBSl",

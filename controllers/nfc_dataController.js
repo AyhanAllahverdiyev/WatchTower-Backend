@@ -9,7 +9,25 @@ const Session=require("../models/session")
 const tagOrder=require("../models/tagOrder");
 const { TLSSocket } = require("tls");
 const { tagOrder_Get } = require("./tagOrder_Controllers");
- 
+ const WebSocket=require('ws')
+
+
+const wss = new WebSocket.Server({ port: 3002 }); 
+
+wss.on('connection', (ws) => {
+  console.log('Client connected');
+
+    ws.send(" Connection Active");
+   ws.on('close', () => {
+    console.log('Client disconnected');
+   
+  });
+
+  
+});
+  
+
+
 
 
 const nfc_data_index = (req, res) => {
@@ -163,6 +181,16 @@ const nfc_data_create_post = async (req, res) => {
 
         userSession.tagOrderIsread = updatedUserSession;
         await userSession.save();
+
+        wss.clients.forEach((client) => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send("refresh"); // Send your desired message here
+          }
+        })
+
+
+
+
         if ( await checkTour(user_id)) {
           console.log("Tour completed");
           console.log("=============================================");

@@ -1,10 +1,14 @@
 const express=require("express");
 const User = require("../models/User");
-
+const WebSocket = require('ws');
 const { json } = require("body-parser");
  const SessionData  = require('../models/session');
 const { mongo } = require("mongoose");
 const NFCData=require("../models/nfc_data");
+
+
+
+
 const session_Check = async (req, res) => {
   try {
     const userId = req.body.id;
@@ -148,7 +152,7 @@ console.log('=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         { session_id: session_id, isActive: true },
         { $set: { tagOrderIsread: newTagOrderIsread } }
       );
-
+    
       res.status(200).json({ message: 'Session card order updated' });
     } else {
       res.status(404).json({ message: 'Unable to find ongoing session' });
@@ -179,18 +183,7 @@ const getUserCount= async (req, res)=>{
 
 
 
-
-const getActiveSessionNumber= async(req,res)=>{
-  try{ 
-  const count =await SessionData.find({isActive:true}).countDocuments();
-  console.log("Active session number:",count);
-  res.status(200).json({count});
-  }catch(err){
-    console.log(err);
-    res.status(500).json({message:"Unable to get active session number"});
-  }
-
-}
+ 
 
 
 const getActiveSessions=async(req,res)=>{
@@ -213,7 +206,6 @@ const getActiveSessions=async(req,res)=>{
  
 module.exports={
   getActiveSessions,
-  getActiveSessionNumber,
   getUserCount,
   session_Check,
   session_Create,

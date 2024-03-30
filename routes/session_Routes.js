@@ -9,7 +9,6 @@ router.post("/history",sessionController.user_read_history_session);
 router.post("/getallsessions",sessionController.get_all_session_for_user)
 router.post("/updateExistingSessionCardOrder",sessionController.updateExistingSessionCardOrder)
 router.get('/totalUserCount',sessionController.getUserCount)
-router.get('/activeSessionCount',sessionController.getActiveSessionNumber)
 router.get('/getActiveSessions',sessionController.getActiveSessions)
  module.exports=router;
  

@@ -10,6 +10,25 @@ const { ObjectId } = require("mongodb");
 const { mongo } = require("mongoose");
 const uuid=require('uuid');
 const { uniq } = require("lodash");
+const WebSocket=require('ws')
+
+const wss = new WebSocket.Server({ port: 3003 }); 
+
+wss.on('connection', (ws) => {
+  console.log('Client connected for Image Alerts');
+
+    ws.send(" Connection Active ");
+   ws.on('close', () => {
+    console.log('Client disconnected');
+   
+  });
+
+  
+});
+  
+
+
+
 const uploadPicture = async (req, res) => {
   try {
     const imageData = req.body.image;
@@ -44,6 +63,13 @@ const uploadPicture = async (req, res) => {
 
     // Save the imageUrl to MongoDB
     await newImageUrl.save();
+  
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send("refresh"); // Send your desired message here
+      }
+    })
+
     
     res.status(201).send('Image uploaded successfully');
 
@@ -120,6 +146,13 @@ const deleteImage = async (req, res) => {
     if (!image) {
       return res.status(404).json({ message: "Image not found" });
     }
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send("refresh");
+      }
+    })
+
+
 
     res.status(200).json({ message: 'Image deleted successfully' });
   } catch (error) {
@@ -169,7 +202,7 @@ console.log(req.body);
     
    console.log('id=====================>',newId);//output: 65fd903101a6d01a9d842e1e
     console.log('url=====================>',url[0].imageUrl);
-    //generating a random id for the alert
+    //generating a random id for the alertœ
 
     const uniqueIdForImageKeysInFrontEnd=uuid.v4();
     console.log('uniqueId=====================>',uniqueIdForImageKeysInFrontEnd);
