@@ -15,11 +15,7 @@ const ImageUrl=require("../models/imageUrl");
 const { ObjectId } = require("mongodb");
 const uuid=require('uuid');
 const { uniq } = require("lodash");
-const WebSocket=require('ws')
-
-
-
-
+ 
 const getUserCount= async (req, res)=>{
     try{
       const count=await User.countDocuments();
@@ -34,8 +30,6 @@ const getUserCount= async (req, res)=>{
   
   
   }
-
-
 
 
 const totalTagCount=async(req,res)=>{

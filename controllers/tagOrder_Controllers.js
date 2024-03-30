@@ -1,6 +1,17 @@
 const tagOrder=require("../models/tagOrder");
 const { json } = require("body-parser");
+const WebSocket = require('ws');
 
+
+const wss=new WebSocket.Server({port:9003});
+
+wss.on('connection',ws=>{
+  ws.on('message',message=>{
+    console.log(`Received message => ${message}`);
+  });
+  ws.send('Hello from Tag Checpoints');
+
+});
 
 
 module.exports.tagOrder_Get = (req, res) => {
@@ -14,6 +25,11 @@ module.exports.tagOrder_Get = (req, res) => {
                     index: item.index,
                     card_id: item.card_id,
                 }));
+               
+                wss.clients.forEach(client=>{
+                    client.send('update');
+                  
+                  })
                 console.log(modifiedResult);
                 res.send(modifiedResult);
             })
@@ -39,6 +55,10 @@ module.exports.tagOrder_Get = (req, res) => {
         const insertedData = await tagOrder.insertMany(tagOrderObjects);
 
         if (insertedData) {
+            wss.clients.forEach(client=>{
+                client.send('update');
+              
+              })
             res.status(200).send("Data saved");
         } else {
             res.status(500).send("Error saving data");

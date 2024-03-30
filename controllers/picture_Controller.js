@@ -20,12 +20,9 @@ wss.on('connection', (ws) => {
     ws.send(" Connection Active ");
    ws.on('close', () => {
     console.log('Client disconnected');
-   
   });
-
-  
 });
-  
+
 
 
 

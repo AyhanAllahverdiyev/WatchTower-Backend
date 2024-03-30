@@ -8,6 +8,15 @@ const NFCData=require("../models/nfc_data");
 
 
 
+const wss=new WebSocket.Server({port:9002});
+
+wss.on('connection',ws=>{
+  ws.on('message',message=>{
+    console.log(`Received message => ${message}`);
+  });
+  ws.send('Hello from Active Sessions');
+
+});
 
 const session_Check = async (req, res) => {
   try {
@@ -45,6 +54,10 @@ const session_end = async (req, res) => {
         await session.save();
       }
       console.log('Ended all active sessions');
+      wss.clients.forEach(client=>{
+        client.send('update');
+      
+      })
       res.status(200).json({ message: 'Ended all active sessions' });
     } else {
       console.log('No active sessions found');
@@ -77,6 +90,14 @@ const session_Create = async (req, res) => {
             tagOrderIsread, 
             session_id:new mongo.ObjectId()
           });
+          wss.clients.forEach(client=>{
+            client.send('update');
+          
+          })
+      
+
+
+
           res.status(201).json({ message: 'Session created', data: sessionData });
         }
         } catch (error) {
@@ -172,18 +193,7 @@ const getUserCount= async (req, res)=>{
     console.log(err);
     res.status(500).json({message:"Unable to get user count"});
   }
-
-
-
-
 }
-
-
-
-
-
-
- 
 
 
 const getActiveSessions=async(req,res)=>{
@@ -191,9 +201,7 @@ const getActiveSessions=async(req,res)=>{
   const response= await SessionData.find({isActive:true});
   console.log(response);
   res.status(200).json(response);
-
-    }
-
+  }
   catch (err){  
     console.log(err);
     res.status(500).json({message:"Unable to get active sessions"});  

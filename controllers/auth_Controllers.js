@@ -6,6 +6,24 @@ const path =require('path');
 dotenv.config();
 const SecretString= process.env.secret.toString();
 const tokenBlacklistPath = path.join(__dirname, 'tokenblacklist.txt');
+const WebSocket=require('ws')
+
+
+
+const wss=new WebSocket.Server({port:9001});
+
+wss.on('connection',ws=>{
+  ws.on('message',message=>{
+    console.log(`Received message => ${message}`);
+  });
+  ws.send('Hello from TOTAL USER COUNT');
+
+});
+
+
+
+
+
  if (!fs.existsSync(tokenBlacklistPath)) {
   fs.writeFileSync(tokenBlacklistPath, '');
 } 
@@ -127,7 +145,13 @@ module.exports.signup_post = async (req, res) => {
   try {
     const user = await User.create({ email, password,auth_level,user_name});
     const token = createToken(user._id);
-    res.cookie("jwt", token, { httpOnly:true,maxAge: maxAge * 1000 });
+    res.cookie("jwt", token, { httpOnly:false,maxAge: maxAge * 1000 });
+
+    wss.clients.forEach(client=>{
+      client.send('update');
+    
+    })
+
     res.status(201).json({ user: user._id });
   } catch (err) {
     const errors = handleErrors(err);
