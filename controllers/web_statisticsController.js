@@ -16,10 +16,10 @@ const { ObjectId } = require("mongodb");
 const uuid=require('uuid');
 const { uniq } = require("lodash");
  
+
 const getUserCount= async (req, res)=>{
     try{
       const count=await User.countDocuments();
-      console.log(count);
       res.status(200).json({count});
     }catch(err){
       console.log(err);
@@ -46,7 +46,6 @@ const totalTagCount=async(req,res)=>{
 const getActiveSessionNumber= async(req,res)=>{
     try{ 
     const count =await SessionData.find({isActive:true}).countDocuments();
-    console.log("Active session number:",count);
     res.status(200).json({count});
     }catch(err){
       console.log(err);
@@ -86,10 +85,48 @@ const alertNumberForToday=async (req,res)=>{
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
-  };
+  }; 
   
+  
+  
+  
+  
+  
+const lineChartData = async (req, res) => {
+    try {
+      const countsByMonth = await NFCData.aggregate([
+        {
+          $project: {
+            month: { $month: { $toDate: '$createdAt' } }, // Extract month from createdAt field
+            year: { $year: { $toDate: '$createdAt' } } // Extract year from createdAt field
+          }
+        },
+        {
+          $group: {
+            _id: { month: '$month', year: '$year' }, // Group by month and year
+            count: { $sum: 1 }
+          }
+        },
+        {
+          $sort: { '_id.year': 1, '_id.month': 1 } // Sort by year and month ascending
+        }
+      ]);
+  
+      const formattedCountsByMonth = countsByMonth.map(entry => ({
+        [`${entry._id.month.toString().padStart(2, '0')}/${entry._id.year}`]: entry.count // Include the full year
+      }));
+  
+      res.status(200).json({ countsByMonth: formattedCountsByMonth });
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
+
+
   
 module.exports= {
+  lineChartData,
     getUserCount,
     totalTagCount,
     getActiveSessionNumber,

@@ -184,7 +184,7 @@ const nfc_data_create_post = async (req, res) => {
 
         wss.clients.forEach((client) => {
           if (client.readyState === WebSocket.OPEN) {
-            client.send("refresh"); // Send your desired message here
+            client.send("refresh"); 
           }
         })
 
