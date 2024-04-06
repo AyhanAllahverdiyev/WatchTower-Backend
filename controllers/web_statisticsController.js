@@ -15,7 +15,7 @@ const ImageUrl=require("../models/imageUrl");
 const { ObjectId } = require("mongodb");
 const uuid=require('uuid');
 const { uniq } = require("lodash");
- 
+ const imageUrl=require('../models/imageUrl');
 
 const getUserCount= async (req, res)=>{
     try{
@@ -59,15 +59,12 @@ const getActiveSessionNumber= async(req,res)=>{
 
 const alertNumberForToday=async (req,res)=>{
     try {
-      // Get the start of today
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
       
-      // Get the end of today
       const todayEnd = new Date();
       todayEnd.setHours(23, 59, 59, 999);
   
-      // Aggregate to count the alerts created today
       const count = await Image.aggregate([
         {
           $match: {
@@ -79,18 +76,17 @@ const alertNumberForToday=async (req,res)=>{
         }
       ]);
   
-      // Send the count as response
       res.json({ count: count.length > 0 ? count[0].totalAlerts : 0 });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }; 
+
   
+
   
-  
-  
-  
+
   
 const lineChartData = async (req, res) => {
     try {
@@ -124,9 +120,42 @@ const lineChartData = async (req, res) => {
   };
 
 
+  const barChartData = async (req, res) => {
+    try {
+      const countsByMonth = await ImageUrl.aggregate([
+        {
+          $project: {
+            month: { $month: { $toDate: '$createdAt' } }, // Extract month from createdAt field
+            year: { $year: { $toDate: '$createdAt' } } // Extract year from createdAt field
+          }
+        },
+        {
+          $group: {
+            _id: { month: '$month', year: '$year' }, // Group by month and year
+            count: { $sum: 1 }
+          }
+        },
+        {
+          $sort: { '_id.year': 1, '_id.month': 1 } // Sort by year and month ascending
+        }
+      ]);
+  
+      const formattedCountsByMonth = countsByMonth.map(entry => ({
+        [`${entry._id.month.toString().padStart(2, '0')}/${entry._id.year}`]: entry.count // Include the full year
+      }));
+  
+      res.status(200).json({ countsByMonth: formattedCountsByMonth });
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
+  
+  
   
 module.exports= {
-  lineChartData,
+    barChartData,
+    lineChartData,
     getUserCount,
     totalTagCount,
     getActiveSessionNumber,

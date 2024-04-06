@@ -8,5 +8,5 @@ router.get("/totalTagCount",webStatisticsController.totalTagCount);
 router.get('/activeSessionCount',webStatisticsController.getActiveSessionNumber)
 router.get('/alertNumberForToday',webStatisticsController.alertNumberForToday);
 router.get('/lineChartData',webStatisticsController.lineChartData);
-
+router.get('/barChartData', webStatisticsController.barChartData)
 module.exports = router;

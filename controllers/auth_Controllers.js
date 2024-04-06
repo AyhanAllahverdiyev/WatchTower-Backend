@@ -16,8 +16,7 @@ wss.on('connection',ws=>{
   ws.on('message',message=>{
     console.log(`Received message => ${message}`);
   });
-  ws.send('Hello from TOTAL USER COUNT');
-
+ 
 });
 
 
@@ -33,8 +32,7 @@ module.exports.get_All_Users = (req, res) => {
     .then((users) => {
       const usersDTO = users.map(user => DTO(user));
       res.send(usersDTO);
-      console.log(usersDTO);
-    })
+     })
     .catch((err) => {
       console.log(err);
     });
@@ -171,7 +169,39 @@ module.exports.login_post = async (req, res) => {
     const errors = handleErrors(err);
     res.status(400).json({ errors });
   }
-};module.exports.logout = (req, res) => {
+};
+
+
+/////Login post for admin Website
+
+module.exports.login_post_web = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.login(email, password);
+    const token = createToken(user._id);
+     res.status(200).json({ user: user._id,auth_level:user.auth_level, jwtToken: token });
+  } catch (err) {
+    const errors = handleErrors(err);
+    res.status(400).json({ errors });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+module.exports.logout = (req, res) => {
   const jwt = req.body.jwt;
     if (isTokenBlacklisted(jwt)) {
     res.clearCookie('jwt');
@@ -224,11 +254,4 @@ function isTokenBlacklisted(token) {
       return res.status(400).json({ verify: false, message: 'JWT token verification failed', error: err.message });
     }
   };
-  
-  sendAccessTokenCookie = (res, newAccessToken) => {
-    res.cookie('jwt', newAccessToken, {
-      httpOnly: false,
-      maxAge: maxAge * 1000,  
-    });
-  };
-  
+   

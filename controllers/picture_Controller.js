@@ -26,6 +26,7 @@ wss.on('connection', (ws) => {
 
 
 
+
 const uploadPicture = async (req, res) => {
   try {
     const imageData = req.body.image;
@@ -96,7 +97,6 @@ const getImageUrl = async (req, res) => {
 
 
 
-
  const getImageViaUrl = async (req, res) => {
   try {
     const id = req.params.id;
@@ -128,7 +128,6 @@ const getAllImageUrls = async (req, res) => {
     
     // Extract URLs from images
     const imageUrls = images.map(image => `${req.protocol}://${req.get('host')}/picture/image/${image._id}`);
-      console.log(imageUrls);
     res.status(200).json(imageUrls);
   } catch (error) {
     console.error(error);
@@ -139,7 +138,7 @@ const deleteImage = async (req, res) => {
   try {
     const id = req.params.id;
     const image = await Image.findByIdAndDelete(id);
-    console.log(id);
+
     if (!image) {
       return res.status(404).json({ message: "Image not found" });
     }
@@ -161,7 +160,6 @@ const deleteImage = async (req, res) => {
 const alertNumber =async(req, res)=>{
   try{
     const numberOfAlerts=await Image.find().count();
-    console.log('number of alerts=====================>',numberOfAlerts);
     res.status(200).json(numberOfAlerts);
 
   } catch(error){
@@ -186,8 +184,6 @@ const showAlertByIndex= async(req, res)=>{
   const index=req.body.index;
   
 
-console.log(req.body);
-  console.log('index====================>',index);
   try{
     //get the _id of the indexed data 
   const id=await Image.find().skip(index).limit(1).select('_id');
@@ -197,12 +193,9 @@ console.log(req.body);
   //finding the url of the image from ImageUrl collection and getting the imageUrl
   const url=await ImageUrl.find({imageId:newId}).select('imageUrl');
     
-   console.log('id=====================>',newId);//output: 65fd903101a6d01a9d842e1e
-    console.log('url=====================>',url[0].imageUrl);
     //generating a random id for the alertœ
 
     const uniqueIdForImageKeysInFrontEnd=uuid.v4();
-    console.log('uniqueId=====================>',uniqueIdForImageKeysInFrontEnd);
 
 const returnDataofAlertWithUrl={
   uniqueId:uniqueIdForImageKeysInFrontEnd,
