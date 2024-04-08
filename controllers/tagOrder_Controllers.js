@@ -25,10 +25,7 @@ module.exports.tagOrder_Get = (req, res) => {
                     card_id: item.card_id,
                 }));
                
-                wss.clients.forEach(client=>{
-                    client.send('update');
-                  
-                  })
+             
                 console.log(modifiedResult);
                 res.send(modifiedResult);
             })
